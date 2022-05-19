@@ -7,8 +7,26 @@ import ConnectionGene from '../genetics/ConnectionGene.mjs';
 import Vec2 from "../geometry/Vec2.mjs";
 
 export default class Amoeba extends Animal {
-    constructor(position, manager) {
+    constructor(position, genome, manager) {
 
+        super(position, genome);
+
+        const amoebaActionMap = {
+            "move_forward": (val, delta) => {
+                const x = Math.cos(this.rotation) * val * this.genome.traitGenes.moveSpeed;
+                const y = Math.sin(this.rotation) * val * this.genome.traitGenes.moveSpeed;
+                this.velocity = new Vec2(x,y);
+            },
+            "rotate": (val, delta) => this.rotation += val * delta * this.genome.traitGenes.rotateSpeed,
+        }
+
+        this.senses = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.INPUT).map(ng => ng.name);
+        this.actions = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.OUTPUT).map(ng => ng.name);
+        this.actionMap = amoebaActionMap;
+        this.manager = manager;
+    }
+
+    static InitialGenome(manager){
         const senseNames = ["random", "energy", "food_distance", "up_pressed", "left_pressed", "right_pressed"];
         const amoebaSenses = senseNames.map(sense => new NodeGene(manager.nextInnovationNumber(), NodeType.INPUT, Activations.Identity, sense, 0));
 
@@ -41,23 +59,8 @@ export default class Amoeba extends Animal {
             rotateSpeed: .2,
         };
 
-        const amoebaActionMap = {
-            "move_forward": (val, delta) => {
-                const x = Math.cos(this.sprite.rotation) * val * this.genome.traitGenes.moveSpeed;
-                const y = Math.sin(this.sprite.rotation) * val * this.genome.traitGenes.moveSpeed;
-                this.velocity = new Vec2(x,y);
-            },
-            "rotate": (val, delta) => this.sprite.rotation += val * delta * this.genome.traitGenes.rotateSpeed,
-        }
-
         const amoebaGenome = new Genome(amoebaSenses, amoebaActions, amoebaConnections, amoebaTraits);
-
-        super(position, amoebaGenome);
-
-        this.senses = senseNames;
-        this.actions = actionNames;
-        this.actionMap = amoebaActionMap;
-        this.manager = manager;
+        return amoebaGenome;
     }
 
     update(delta){
@@ -84,7 +87,12 @@ export default class Amoeba extends Animal {
             this.actionMap[action](outputValue, delta);
         });
 
-        this.sprite.x += this.velocity.x * delta;
-		this.sprite.y += this.velocity.y * delta;
+        this.x += this.velocity.x * delta;
+		this.y += this.velocity.y * delta;
+    }
+
+    duplicate(){
+        console.log(this);
+        return new Amoeba(this.position, this.genome, this.manager);
     }
 }

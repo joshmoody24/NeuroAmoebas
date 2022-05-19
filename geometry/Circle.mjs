@@ -1,17 +1,15 @@
 import Vec2 from './Vec2.mjs';
 
-export default class Circle {
+export default class Circle extends PIXI.Graphics {
 	constructor(pos, color, radius) {
-
+		super()
 		this.radius = radius;
 		this.velocity = new Vec2(0,0);
-		let sprite = new PIXI.Graphics();
-		sprite.beginFill(color);
-		sprite.drawCircle(0, 0, radius);
-		sprite.endFill();
-		sprite.x = pos.x;
-		sprite.y = pos.y;
-		this.sprite = sprite;
+		this.beginFill(color);
+		this.drawCircle(0, 0, radius);
+		this.endFill();
+		this.x = pos.x;
+		this.y = pos.y;
 	}
 
 	collide(other) {

@@ -17,8 +17,9 @@ window.onkeyup = (e) => manager.setKey(e.key, false);
 const animals = [];
 for(let i = 0; i < Config.starting_animals; i++){
 	const spawnPos = new Vec2(Math.random() * width, Math.random() * height);
+	const genome = Amoeba.InitialGenome(manager);
 	animals.push(
-		new Amoeba(spawnPos, manager)
+		new Amoeba(spawnPos, genome, manager)
 	);
 }
 
@@ -29,7 +30,7 @@ let objects = [...animals, ...foods, ]//...lines];
 
 console.log(objects);
 
-objects.forEach(o => app.stage.addChild(o.sprite));
+objects.forEach(o => app.stage.addChild(o));
 
 app.renderer.backgroundColor = 0x456268;
 document.querySelector("div#canvas").appendChild(app.view);

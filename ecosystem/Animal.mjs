@@ -9,7 +9,7 @@ export default class Animal extends Circle {
 	}
 
 	update(delta) {
-		this.sprite.x += this.velocity.x * delta;
-		this.sprite.y += this.velocity.y * delta;
+		this.x += this.velocity.x * delta;
+		this.y += this.velocity.y * delta;
 	}
 }
