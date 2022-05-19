@@ -19,5 +19,4 @@ export default class Manager {
     setKey(key, isPressed=true){
         this.pressedKeys[key] = isPressed;
     }
-
 }

@@ -6,15 +6,17 @@ const ActivationFunctions = {
 }
 
 function Sigmoid(input) {
-    return 1/(1+ Math.exp(-input));
+    return 1/(1 + Math.exp(-input));
 }
 
 function Clamp(input) {
-    return Math.min(Math.max(input, 0), 1);
+	const result = Math.min(Math.max(input, 0), 1);
+    return result; 
 }
 
 function SigmoidScaled(input){
-    return Sigmoid(input) * 2 - 1;
+    const result = Sigmoid(input) * 2 - 1;
+	return result;
 }
 
 function Identity(input) {

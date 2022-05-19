@@ -5,7 +5,7 @@ export default class ConnectionGene extends Gene {
         super(innovationNumber);
         this.inputInnovationNumber = inputInnovationNumber;
         this.outputInnovationNumber = outputInnovationNumber;
-
+	this.enabled = true;
         // randomly initialize weight between min and max
         const maxWeight = 2;
         const minWeight = -2;

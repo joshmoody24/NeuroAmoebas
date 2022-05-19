@@ -15,6 +15,8 @@ let hud = new PIXI.Application({width, height, antialias:true});
 let manager = new Manager();
 window.onkeydown = (e) => manager.setKey(e.key, true);
 window.onkeyup = (e) => manager.setKey(e.key, false);
+manager.app = app;
+manager.hud = hud;
 
 const animals = [];
 for(let i = 0; i < Config.starting_animals; i++){
@@ -25,19 +27,30 @@ for(let i = 0; i < Config.starting_animals; i++){
 	);
 }
 
+const genome = Amoeba.InitialGenome(manager);
+console.log(genome);
+let mut_animal = new Amoeba(new Vec2(25, 25), genome, manager);
+// temp for testing mutations
+for(let i = 0; i < 1; i++){
+	let newGenome =  mut_animal.genome.GetMutatedGenome(manager);
+	console.log(newGenome);
+	mut_animal = new Amoeba(new Vec2(25, 25), newGenome, manager);
+}
+
+animals.push(mut_animal);
+
 const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 10)];
 
 
 let objects = [...animals, ...foods, ]//...lines];
 
-console.log("Objects:", objects);
-
 objects.forEach(o => app.stage.addChild(o));
+console.log("Objects:", objects);
 
 app.renderer.backgroundColor = 0x456268;
 document.querySelector("div#canvas").appendChild(app.view);
 app.ticker.add((delta) => {
-	objects.forEach(o => {
+	app.stage.children.forEach(o => {
 		o.update(delta);
 	});
 });
@@ -46,7 +59,7 @@ hud.renderer.backgroundColor = 0x333333;
 document.querySelector("div#hud").appendChild(hud.view);
 
 const brainViewer = new BrainViewer(hud);
-brainViewer.loadBrain(animals[0]);
+brainViewer.loadBrain(mut_animal);
 hud.ticker.add((delta) => {
 	brainViewer.update();
 })
