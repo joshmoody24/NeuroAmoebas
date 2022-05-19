@@ -24,7 +24,7 @@ export default class Genome {
 		const totalChance = Math.max(1, combined);
 		const r = Math.random();
 
-		let newGenome = JSON.parse(JSON.stringify(this));
+		let newGenome = this;
 
 		if (r < addNodeChance / totalChance) {
 			console.log("add node");
@@ -65,6 +65,7 @@ export default class Genome {
 		);
 		genome.connectionGenes.push(newConn1);
 		genome.connectionGenes.push(newConn2);
+		genome.nodeGenes.push(newNode);
 		genome.connectionGenes = genome.connectionGenes.filter(cg => cg !== conn);
 		return genome;
 	}

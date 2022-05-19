@@ -31,10 +31,11 @@ const genome = Amoeba.InitialGenome(manager);
 console.log(genome);
 let mut_animal = new Amoeba(new Vec2(25, 25), genome, manager);
 // temp for testing mutations
-for(let i = 0; i < 1; i++){
+for(let i = 0; i < 3; i++){
 	let newGenome =  mut_animal.genome.GetMutatedGenome(manager);
 	console.log(newGenome);
 	mut_animal = new Amoeba(new Vec2(25, 25), newGenome, manager);
+	console.log(mut_animal);
 }
 
 animals.push(mut_animal);
