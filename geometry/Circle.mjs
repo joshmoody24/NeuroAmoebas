@@ -1,7 +1,9 @@
 import Vec2 from './Vec2.mjs';
+import Sprite from './Sprite.mjs';
 
-export default class Circle {
-	constructor(pos, color, radius, app) {
+export default class Circle extends Sprite {
+	constructor(pos, color, radius) {
+
 		this.radius = radius;
 		this.velocity = new Vec2(0,0);
 		let sprite = new PIXI.Graphics();
