@@ -1,4 +1,7 @@
-export class LineRenderer {
+import Vec2 from "./Vec2.mjs";
+import Line from "./Line.mjs";
+
+export default class LineRenderer {
 	constructor(obj1, obj2, lineSize, lineColor){
 		this.obj1 = obj1;
 		this.obj2 = obj2;

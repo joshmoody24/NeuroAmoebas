@@ -4,6 +4,7 @@ import Config from './config.json' assert {type: 'json'};
 import Amoeba from './ecosystem/Amoeba.mjs';
 import Food from './ecosystem/Food.mjs';
 import Manager from './ecosystem/Manager.mjs';
+import BrainViewer from './ui/BrainViewer.mjs';
 
 let width = 512;
 let height = 512;
@@ -43,6 +44,12 @@ app.ticker.add((delta) => {
 
 hud.renderer.backgroundColor = 0x333333;
 document.querySelector("div#hud").appendChild(hud.view);
+
+const brainViewer = new BrainViewer(hud);
+brainViewer.loadBrain(animals[0]);
+hud.ticker.add((delta) => {
+	brainViewer.update();
+})
 
 
 // resize
