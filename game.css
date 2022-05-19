@@ -1,18 +1,28 @@
 body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
-  color: #456268;
-  background-color: #fcf8ec;
-  text-align: center; }
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	color: #456268;
+	background-color: #fcf8ec;
+	text-align: center;
+}
 
 div.button {
-  box-shadow: 4px 5px 0px #1d1d1d;
-  border: 2px solid #1d1d1b;
-  background-color: #ffcc00; }
-  div.button.clicked {
-    transform: translate3d(calc(-110% + 5px), 5px, 0);
-    box-shadow: 0px 0px 0px #1d1d1b; }
+	box-shadow: 4px 5px 0px #1d1d1d;
+	border: 2px solid #1d1d1b;
+	background-color: #ffcc00;
+}
+
+div.button.clicked {
+	transform: translate3d(calc(-110% + 5px), 5px, 0);
+	box-shadow: 0px 0px 0px #1d1d1b;
+}
+
+.app {
+	width: 512px;
+	height: 512px;
+	margin: 1rem;
+}

@@ -9,10 +9,10 @@ export default class NodeIcon extends Circle {
     }
 
     update(delta){
-        this.clear();
-        this.beginFill(Multiply(this.color,this.node.value));
-		this.drawCircle(0, 0, this.radius);
-		this.endFill();
-        console.log("updating")
+        this
+		.clear()
+		.beginFill(Multiply(this.color,this.node.value))
+		.drawCircle(0, 0, this.radius)
+		.endFill()
     }
 }
