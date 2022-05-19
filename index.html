@@ -10,14 +10,32 @@
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="game.css">
+        <!-- CSS only -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     </head>
     <body>
-        <div id='main'>
-            <div id=score>Lifetime: <span>0</span></div>
-            <div id=canvas></div>
-            <div id=controls>Control explanation goes <b>here</b>.
-            <div id='about'></div>
-	    <div id='hud'></div>
+        <div class="container">
+
+            <div class="row">
+                <div id=score>Lifetime: <span>0</span></div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div id="canvas" class="app col"></div>
+                </div>
+                <div class="col">
+                    <div id='hud' class="app col"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id=controls>Control explanation goes <b>here</b>.</div>
+            </div>
+
+            <div class="row">
+                <div id='about'></div>
+            </div>
 
         </div>
 

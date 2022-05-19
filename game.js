@@ -9,6 +9,7 @@ let width = 512;
 let height = 512;
 
 let app = new PIXI.Application({width, height, antialias:true});
+let hud = new PIXI.Application({width, height, antialias:true});
 
 let manager = new Manager();
 window.onkeydown = (e) => manager.setKey(e.key, true);
@@ -28,7 +29,7 @@ const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 10)];
 
 let objects = [...animals, ...foods, ]//...lines];
 
-console.log(objects);
+console.log("Objects:", objects);
 
 objects.forEach(o => app.stage.addChild(o));
 
@@ -40,12 +41,17 @@ app.ticker.add((delta) => {
 	});
 });
 
+hud.renderer.backgroundColor = 0x333333;
+document.querySelector("div#hud").appendChild(hud.view);
+
+
 // resize
 window.onresize = () => {
 	let d = document.querySelector("div#canvas");
 	width = d.clientWidth;
 	height = width;
 	app.renderer.resize(width, height);
+	hud.renderer.resize(width, height);
 }
 
 window.onresize();
