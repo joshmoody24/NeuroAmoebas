@@ -65,18 +65,19 @@ export default class Amoeba extends Animal {
         const inputValues = {};
         this.senses.forEach(s => {
             const relatedNode = this.brain.nodes.find(n => n.name === s);
-            inputValues[relatedNode.id] = Math.random();
+            relatedNode.evaluated = true;
+            relatedNode.value = Math.random();
         });
 
-        const upNodeId = this.brain.nodes.find(n => n.name === "up_pressed").id;
-        const leftNodeId = this.brain.nodes.find(n => n.name === "left_pressed").id;
-        const rightNodeId = this.brain.nodes.find(n => n.name === "right_pressed").id;
+        const upNode = this.brain.nodes.find(n => n.name === "up_pressed");
+        const leftNode = this.brain.nodes.find(n => n.name === "left_pressed");
+        const rightNode = this.brain.nodes.find(n => n.name === "right_pressed");
 
-        inputValues[upNodeId] = this.manager.getKey("ArrowUp") ? 1 : 0;
-        inputValues[leftNodeId] = this.manager.getKey("ArrowLeft") ? 1 : 0;
-        inputValues[rightNodeId] = this.manager.getKey("ArrowRight") ? 1 : 0;
+        upNode.value = this.manager.getKey("ArrowUp") ? 1 : 0;
+        leftNode.value = this.manager.getKey("ArrowLeft") ? 1 : 0;
+        rightNode.value = this.manager.getKey("ArrowRight") ? 1 : 0;
 
-        const nnResults = this.brain.evaluate(inputValues);
+        const nnResults = this.brain.evaluate();
 
         Object.keys(this.actionMap).forEach(action => {
             const outputValue = nnResults[this.brain.nodes.find(n => n.name === action).id];

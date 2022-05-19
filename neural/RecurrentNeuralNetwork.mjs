@@ -9,24 +9,28 @@ export default class RecurrentNeuralNetwork {
         this.connections = genome.connectionGenes.map(ng => new Connection(ng));
     }
 
-    // returns dict with each node's value
-    evaluate(inputValues){
-        // a dictionary of id's to activations
-        const finishedNodes = {...inputValues};
+    evaluate(){
 
-        while(Object.keys(finishedNodes).length !== this.nodes.length){
-            this.nodes.filter(n => n.type !== NodeType.INPUT).forEach(node => {
-                // get this node's inputs and see if they're finished
-                const connectionsToNode = this.connections.filter(c => c.outputId === node.id);
-                const inputsToNode = connectionsToNode.map(c => this.nodes.find(n => n.id === c.inputId));
-                if(inputsToNode.every(n => n.id in finishedNodes)){
-                    const sum = inputsToNode.reduce((sum, inputNode) => sum + finishedNodes[inputNode.id] * connectionsToNode.find(c => c.inputId === inputNode.id).weight, 0);
-                    finishedNodes[node.id] = node.activation(sum + node.bias);
-                }
-            });
-        }
+        do{
+            this.nodes
+                .filter(n => n.type !== NodeType.INPUT)
+                .forEach(node => {
+                    node.evaluated = false;
+                    const connectionsToNode = this.connections.filter(c => c.outputId === node.id);
+                    const inputsToNode = connectionsToNode.map(c => this.nodes.find(n => n.id === c.inputId));
+                    const evaluatedInputs = inputsToNode.filter(n => n.evaluated == true || n.type == NodeType.INPUT);
+                    node.sum = evaluatedInputs.reduce((sum, inputNode) => sum + inputNode.value * connectionsToNode.find(c => c.inputId === inputNode.id).weight, 0);
+                    if(evaluatedInputs.length > 0) node.evaluated = true;
+                });
+        } while (this.nodes.filter(n => n.type == NodeType.OUTPUT).some(n => !n.evaluated))
 
-        return finishedNodes;
+        this.nodes.filter(n => n.type !== NodeType.INPUT && n.evaluated).forEach(n => {
+            n.value = n.activation(n.sum);
+        });
+
+        const result = {}
+        this.nodes.forEach(n => result[n.id] = n.value);
+        return result;
     }
 
 }
