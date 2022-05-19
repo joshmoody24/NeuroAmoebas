@@ -1,18 +1,16 @@
 import Circle from '../geometry/Circle.mjs';
+import Brain from './Brain.mjs';
 
 export default class Animal extends Circle {
-	constructor(pos, color){
+	constructor(pos, genome){
 		const radius = 10;
-		super(pos,color, radius);
+		super(pos, genome.traitGenes.color, genome.traitGenes.radius);
 		this.movementSpeed = 1;
+		this.brain = Brain.FromGenome(genome);
 	}
 
 	update(delta) {
 		this.sprite.x += this.velocity.x * delta;
 		this.sprite.y += this.velocity.y * delta;
-	}
-
-	static FromGenome(genome, pos){
-		return new Animal(pos, 0x33ffcc);
 	}
 }

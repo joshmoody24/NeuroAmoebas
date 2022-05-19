@@ -24,12 +24,16 @@ const InitialGenome = new Genome(
 		new NodeGene("rotate", NodeType.OUTPUT),
 	],
 	[],
+	{color: 0x33ffcc, radius: 10},
 );
 
 
 const animals = [];
 for(let i = 0; i < Config.starting_animals; i++){
-	animals.push(Animal.FromGenome(InitialGenome, new Vec2(Math.random() * width, Math.random() * height)));
+	const spawnPos = new Vec2(Math.random() * width, Math.random() * height);
+	animals.push(
+		new Animal(spawnPos, InitialGenome)
+	);
 }
 
 const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 10)];
