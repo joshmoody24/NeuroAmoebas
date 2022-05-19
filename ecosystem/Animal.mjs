@@ -1,12 +1,11 @@
 import Circle from '../geometry/Circle.mjs';
-import Brain from './Brain.mjs';
+import RecurrentNeuralNetwork from '../neural/RecurrentNeuralNetwork.mjs';
 
 export default class Animal extends Circle {
-	constructor(pos, genome){
-		const radius = 10;
-		super(pos, genome.traitGenes.color, genome.traitGenes.radius);
-		this.movementSpeed = 1;
-		this.brain = Brain.FromGenome(genome);
+	constructor(position, genome){
+		super(position, genome.traitGenes.color, genome.traitGenes.radius);
+		this.genome = genome;
+		this.brain = new RecurrentNeuralNetwork(genome);
 	}
 
 	update(delta) {

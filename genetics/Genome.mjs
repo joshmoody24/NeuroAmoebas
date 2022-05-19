@@ -1,6 +1,6 @@
 export default class Genome {
-    constructor(initialNodes, initialConnections, traitGenes){
-        this.nodeGenes = initialNodes;
+    constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes){
+        this.nodeGenes = [...inputNodeGenes, ...outputNodeGenes];
         this.connectionGenes = initialConnections;
         this.traitGenes = traitGenes;
     }
