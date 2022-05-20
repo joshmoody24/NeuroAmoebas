@@ -65,3 +65,17 @@ window.onresize = () => {
 }
 
 window.onresize();
+
+function SpawnFood(){
+	let foodToSpawn = new Food(RandomScreenPos(10), 0xfcf8ec, 10);
+	foodToSpawn.random();
+	app.stage.addChild(foodToSpawn);
+}
+
+function RandomScreenPos(padding){
+	const x = padding + Math.random()*(width - 2*padding);
+	const y = padding + Math.random()*(height - 2*padding);
+	return new Vec2(x,y);
+}
+
+window.setInterval(SpawnFood, 1000);

@@ -26,8 +26,6 @@ export default class Amoeba extends Animal {
 		this.actions = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.OUTPUT).map(ng => ng.name);
 		this.actionMap = amoebaActionMap;
 		this.manager = manager;
-		this.maxEnergy = this.genome.traitGenes.maxEnergy;
-		this.energy = this.genome.traitGenes.startingEnergy;
 	}
 
 	static InitialGenome(manager){
@@ -61,8 +59,6 @@ export default class Amoeba extends Animal {
 			radius: 10,
 			moveSpeed: 2,
 			rotateSpeed: .2,
-			maxEnergy: 3,
-			startingEnergy: 1,
 			moveCost: .001,
 			rotateCost: 0.0005,
 			restingCost: 0.001,
@@ -122,28 +118,9 @@ export default class Amoeba extends Animal {
 		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost);
 	}
 
-	spendEnergy(amount){
-		this.energy -= amount;
-		if(this.energy < 0){
-			this.energy = 0;
-			this.die();
-		}
-	}
-
-	gainEnergy(amount){
-		this.energy += amount;
-		if(this.energy > this.maxEnergy){
-			this.energy = this.maxEnergy;
-		}
-	}
-
-	die(){
-		this.parent.removeChild(this);
-		this.destroy();
-	}
-
-	reproduce(){
-		const spawnPos = new Vec2(this.position.x + Math.random(), this.position.y + Math.random());
+	layEgg(){
+		const spawnPos = new Vec2(this.position.x, this.position.y);
+		// let egg = new Egg(genome);
 		this.manager.app.addChild(new Amoeba(spawnPos, this.genome, this.manager));
 	}
 }
