@@ -5,6 +5,7 @@ import Amoeba from './ecosystem/Amoeba.mjs';
 import Food from './ecosystem/Food.mjs';
 import Manager from './ecosystem/Manager.mjs';
 import BrainViewer from './ui/BrainViewer.mjs';
+import Genome from './genetics/Genome.mjs';
 
 let width = 512;
 let height = 512;
@@ -31,11 +32,10 @@ const genome = Amoeba.InitialGenome(manager);
 console.log(genome);
 let mut_animal = new Amoeba(new Vec2(25, 25), genome, manager);
 // temp for testing mutations
-for(let i = 0; i < 3; i++){
-	let newGenome =  mut_animal.genome.GetMutatedGenome(manager);
+for(let i = 0; i < 100; i++){
+	let newGenome =  Genome.GetMutatedGenome(mut_animal.genome, manager);
 	console.log(newGenome);
 	mut_animal = new Amoeba(new Vec2(25, 25), newGenome, manager);
-	console.log(mut_animal);
 }
 
 animals.push(mut_animal);

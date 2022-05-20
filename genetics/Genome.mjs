@@ -1,7 +1,6 @@
 import ConnectionGene from './ConnectionGene.mjs';
 import NodeGene from './NodeGene.mjs';
 import NodeType from './NodeType.mjs';
-import Activations from '../neural/Activations.mjs';
 
 export default class Genome {
 	constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes, hiddenNodeGenes = []){
@@ -10,7 +9,7 @@ export default class Genome {
 		this.traitGenes = traitGenes;
 	}
 
-	GetMutatedGenome(manager){
+	static GetMutatedGenome(genome, manager){
 		// trait genes do not currently mutate
 		// TODO: make these chances part of the genome itself
 		// TODO: make this part of the config file
@@ -23,8 +22,9 @@ export default class Genome {
 		const combined = addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance;
 		const totalChance = Math.max(1, combined);
 		const r = Math.random();
-
-		let newGenome = this;
+		
+		// make a copy of the genome, then mutate it
+		let newGenome = JSON.parse(JSON.stringify(genome));
 
 		if (r < addNodeChance / totalChance) {
 			console.log("add node");
@@ -48,7 +48,9 @@ export default class Genome {
 	static Mutate_AddNode(genome, manager){
 		// choose a connection to split
 		let conn = randomElement(genome.connectionGenes);
-		let newNode = new NodeGene(manager.nextInnovationNumber(), NodeType.HIDDEN, Activations.Sigmoid);
+		// if no connections, return
+		if(!conn) return genome;
+		let newNode = new NodeGene(manager.nextInnovationNumber(), NodeType.HIDDEN, "Sigmoid");
 		// conn.enabled = false;
 		// TODO ^
 		const newConn1 = new ConnectionGene(
@@ -88,9 +90,10 @@ export default class Genome {
 		const outputId = randomElement(potentialOutputs).innovationNumber;
 
 		// make sure the connection doesn't already exist
-		if(genome.connectionGenes.find(c => c.inputInnovationNumber === inputId || c.outputInnovationNumber === outputId)) return genome;
+		if(genome.connectionGenes.find(c => c.inputInnovationNumber === inputId && c.outputInnovationNumber === outputId)) return genome;
 
-		genome.connectionGenes.push(new ConnectionGene(manager.nextInnovationNumber, inputId, outputId));
+		genome.connectionGenes.push(new ConnectionGene(manager.nextInnovationNumber(), inputId, outputId));
+		console.log(inputId, outputId);
 		return genome;
 	}
 

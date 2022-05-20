@@ -11,22 +11,29 @@ export default class RecurrentNeuralNetwork {
 
     evaluate(){
 
+
+	this.nodes.filter(n => n.type !== NodeType.INPUT).forEach(n => {
+		n.evaluated = false;
+		n.value = 0;
+	});
+
         do{
             this.nodes
                 .filter(n => n.type !== NodeType.INPUT)
                 .forEach(node => {
-                    node.evaluated = false;
                     const connectionsToNode = this.connections.filter(c => c.outputId === node.id);
                     const inputsToNode = connectionsToNode.map(c => this.nodes.find(n => n.id === c.inputId));
-                    const evaluatedInputs = inputsToNode.filter(n => n.evaluated == true || n.type == NodeType.INPUT);
-                    node.sum = evaluatedInputs.reduce((sum, inputNode) => sum + inputNode.value * connectionsToNode.find(c => c.inputId === inputNode.id).weight, 0);
-                    if(evaluatedInputs.length > 0) node.evaluated = true;
-                });
-        } while (this.nodes.filter(n => n.type == NodeType.OUTPUT).some(n => !n.evaluated))
+                    const unEvaluatedInputs = inputsToNode.filter(n => n.evaluated === false && n.type !== NodeType.INPUT);
 
-        this.nodes.filter(n => n.type !== NodeType.INPUT && n.evaluated).forEach(n => {
-            n.value = n.activation(n.sum);
-        });
+                    node.sum = inputsToNode.reduce((sum, inputNode) => sum + inputNode.value * connectionsToNode.find(c => c.inputId === inputNode.id).weight, 0);
+                    node.evaluated = true;
+                });
+        } while (this.nodes.filter(n => n.type !== NodeType.INPUT).some(n => !n.evaluated))
+        
+	    
+	    this.nodes.filter(n => n.type !== NodeType.INPUT).forEach(n => {
+		    n.value = n.activation(n.sum) + n.bias;
+	    });
 
         const result = {}
         this.nodes.forEach(n => result[n.id] = n.value);

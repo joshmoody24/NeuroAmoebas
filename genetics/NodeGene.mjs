@@ -1,7 +1,7 @@
 import Gene from './Gene.mjs';
 
 export default class NodeGene extends Gene{
-    constructor(innovationNumber, nodeType, activation, name="", bias=null){
+    constructor(innovationNumber, nodeType, activationStr, name="", bias=null){
         super(innovationNumber);
         this.innovationNumber = innovationNumber;
 
@@ -11,7 +11,7 @@ export default class NodeGene extends Gene{
         const biasRange = maxBias - minBias;
         this.bias = bias ?? (Math.random() * biasRange + minBias);
         
-        this.activation = activation;
+        this.activation = activationStr;
         this.nodeType = nodeType;
 
         this.name = name ?? "default name";

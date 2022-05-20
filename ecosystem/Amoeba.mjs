@@ -32,11 +32,11 @@ export default class Amoeba extends Animal {
 
 	static InitialGenome(manager){
 		const senseNames = ["random", "energy", "food_distance", "up_pressed", "left_pressed", "right_pressed"];
-		const amoebaSenses = senseNames.map(sense => new NodeGene(manager.nextInnovationNumber(), NodeType.INPUT, Activations.Identity, sense, 0));
+		const amoebaSenses = senseNames.map(sense => new NodeGene(manager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
-			{name: "move_forward", activation: Activations.Clamp},
-			{name: "rotate", activation: Activations.SigmoidScaled},
+			{name: "move_forward", activation: "Clamp"},
+			{name: "rotate", activation: "Identity"},
 		]
 		const amoebaActions = actionNames.map(action => new NodeGene(manager.nextInnovationNumber(), NodeType.OUTPUT, action.activation, action.name, 0));
 
