@@ -103,7 +103,6 @@ export default class Amoeba extends Animal {
 
 	move(vec){
 		if(this.energy <= 0) return;
-		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost);
 		this.x += vec.x;
 		this.y += vec.y;
 	
@@ -115,6 +114,7 @@ export default class Amoeba extends Animal {
 		if(this.y < 0 || this.y > this.manager.app.height){
 			this.y = Math.min(Math.max(this.y, 0), this.manager.app.height);
 		}
+		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost);
 	}
 
 	rotate(amount){

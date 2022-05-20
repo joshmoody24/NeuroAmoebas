@@ -28,17 +28,6 @@ for(let i = 0; i < Config.starting_animals; i++){
 	);
 }
 
-const genome = Amoeba.InitialGenome(manager);
-console.log(genome);
-let mut_animal = new Amoeba(new Vec2(25, 25), genome, manager);
-// temp for testing mutations
-for(let i = 0; i < 100; i++){
-	let newGenome =  Genome.GetMutatedGenome(mut_animal.genome, manager);
-	console.log(newGenome);
-	mut_animal = new Amoeba(new Vec2(25, 25), newGenome, manager);
-}
-
-animals.push(mut_animal);
 
 const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 10)];
 
@@ -60,7 +49,7 @@ hud.renderer.backgroundColor = 0x333333;
 document.querySelector("div#hud").appendChild(hud.view);
 
 const brainViewer = new BrainViewer(hud);
-brainViewer.loadBrain(mut_animal);
+brainViewer.loadBrain(animals[0]);
 hud.ticker.add((delta) => {
 	brainViewer.update();
 })
