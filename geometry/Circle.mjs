@@ -2,11 +2,12 @@ import Vec2 from './Vec2.mjs';
 
 export default class Circle extends PIXI.Graphics {
 	constructor(pos, color, radius) {
-		super()
+		super();
+		const sizeScale = 10;
 		this.radius = radius;
 		this.velocity = new Vec2(0,0);
 		this.beginFill(color);
-		this.drawCircle(0, 0, radius);
+		this.drawCircle(0, 0, radius * sizeScale);
 		this.endFill();
 		this.x = pos.x;
 		this.y = pos.y;

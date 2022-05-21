@@ -51,7 +51,7 @@ export default class BrainViewer {
                 x = outputX;
             }
 
-            const radius = 10;
+            const radius = 7;
             const activeColor = 0xffffff;
 
             const nodeIcon = new NodeIcon(node, new Vec2(x,y), activeColor, radius);
@@ -65,11 +65,14 @@ export default class BrainViewer {
         animal.brain.connections.forEach(c => {
             const connectionIcon = new ConnectionIcon(c);
 
+            const lineWidth = 2;
+            const lineColor = 0xff0000;
+
             const lineRenderer = new LineRenderer(
                 this.NodeUIs.find(nui => nui.node.id === connectionIcon.connection.inputId),
                 this.NodeUIs.find(nui => nui.node.id === connectionIcon.connection.outputId),
-                3,
-                0xff0000,
+                lineWidth,
+                lineColor,
             );
 
             this.hud.stage.addChild(lineRenderer.line);

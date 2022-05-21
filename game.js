@@ -7,8 +7,10 @@ import Manager from './ecosystem/Manager.mjs';
 import BrainViewer from './ui/BrainViewer.mjs';
 import Genome from './genetics/Genome.mjs';
 
-let width = 512;
-let height = 512;
+window.gameConfig = Config;
+let width = window.gameConfig.width;
+let height = window.gameConfig.height;
+
 
 let app = new PIXI.Application({width, height, antialias:true});
 let hud = new PIXI.Application({width, height, antialias:true});
@@ -18,18 +20,24 @@ window.onkeydown = (e) => manager.setKey(e.key, true);
 window.onkeyup = (e) => manager.setKey(e.key, false);
 manager.app = app;
 manager.hud = hud;
+window.gameManager = manager;
+
+function RandomScreenPos(padding){
+	const x = padding + Math.random()*(width - 2*padding);
+	const y = padding + Math.random()*(height - 2*padding);
+	return new Vec2(x,y);
+}
 
 const animals = [];
-for(let i = 0; i < Config.starting_animals; i++){
-	const spawnPos = new Vec2(Math.random() * width, Math.random() * height);
+for(let i = 0; i < window.gameConfig.startingAnimals; i++){
 	const genome = Amoeba.InitialGenome(manager);
+	const spawnPos = RandomScreenPos(genome.traitGenes.size);
 	animals.push(
 		new Amoeba(spawnPos, genome, manager)
 	);
 }
 
-
-const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 10)];
+const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 1)];
 
 
 let objects = [...animals, ...foods, ]//...lines];
@@ -67,15 +75,11 @@ window.onresize = () => {
 window.onresize();
 
 function SpawnFood(){
-	let foodToSpawn = new Food(RandomScreenPos(10), 0xfcf8ec, 10);
-	foodToSpawn.random();
+	let foodToSpawn = new Food(RandomScreenPos(10), 0xfcf8ec, 1);
 	app.stage.addChild(foodToSpawn);
 }
 
-function RandomScreenPos(padding){
-	const x = padding + Math.random()*(width - 2*padding);
-	const y = padding + Math.random()*(height - 2*padding);
-	return new Vec2(x,y);
-}
-
 window.setInterval(SpawnFood, 1000);
+
+const fpsCounter = document.querySelector("span#fps-display");
+window.setInterval(() => fpsCounter.innerHTML = Math.round(app.ticker.FPS));

@@ -7,7 +7,7 @@ import ConnectionGene from '../genetics/ConnectionGene.mjs';
 import Vec2 from "../geometry/Vec2.mjs";
 
 export default class Amoeba extends Animal {
-	constructor(position, genome, manager) {
+	constructor(position, genome) {
 
 		super(position, genome);
 
@@ -25,18 +25,19 @@ export default class Amoeba extends Animal {
 		this.senses = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.INPUT).map(ng => ng.name);
 		this.actions = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.OUTPUT).map(ng => ng.name);
 		this.actionMap = amoebaActionMap;
-		this.manager = manager;
 	}
 
-	static InitialGenome(manager){
+	static InitialGenome(){
+		const baseTraits = Animal.baseTraits();
+
 		const senseNames = ["random", "energy", "food_distance", "up_pressed", "left_pressed", "right_pressed"];
-		const amoebaSenses = senseNames.map(sense => new NodeGene(manager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
+		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
 			{name: "move_forward", activation: "Clamp"},
 			{name: "rotate", activation: "Identity"},
 		]
-		const amoebaActions = actionNames.map(action => new NodeGene(manager.nextInnovationNumber(), NodeType.OUTPUT, action.activation, action.name, 0));
+		const amoebaActions = actionNames.map(action => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.OUTPUT, action.activation, action.name, 0));
 
 
 		const upNodeId = amoebaSenses.find(n => n.name === "up_pressed").innovationNumber;
@@ -48,27 +49,32 @@ export default class Amoeba extends Animal {
 
 		const amoebaConnections = [
 			// temp
-			new ConnectionGene(manager.nextInnovationNumber(), upNodeId, moveNodeId, 1),
-			new ConnectionGene(manager.nextInnovationNumber(), leftNodeId, rotateNodeId, -1),
-			new ConnectionGene(manager.nextInnovationNumber(), rightNodeId, rotateNodeId, 1),
+			new ConnectionGene(window.gameManager.nextInnovationNumber(), upNodeId, moveNodeId, 1),
+			new ConnectionGene(window.gameManager.nextInnovationNumber(), leftNodeId, rotateNodeId, -1),
+			new ConnectionGene(window.gameManager.nextInnovationNumber(), rightNodeId, rotateNodeId, 1),
 
 		];
 
 		const amoebaTraits = {
 			color: 0x33ffcc,
-			radius: 10,
 			moveSpeed: 2,
-			rotateSpeed: .2,
+			rotateSpeed: .1,
 			moveCost: .001,
 			rotateCost: 0.0005,
 			restingCost: 0.001,
 		};
 
-		const amoebaGenome = new Genome(amoebaSenses, amoebaActions, amoebaConnections, amoebaTraits);
+		const traitGenes = {...baseTraits, ...amoebaTraits}
+
+		const amoebaGenome = new Genome(amoebaSenses, amoebaActions, amoebaConnections, traitGenes);
+		// start facing up, just for fun
+		this.rotation += Math.PI / 2;
 		return amoebaGenome;
 	}
 
 	update(delta){
+		Animal.prototype.update.call(this, delta);
+
 		// get the inputs
 		const inputValues = {};
 	
@@ -81,10 +87,10 @@ export default class Amoeba extends Animal {
 
 		foodDistanceNode.value = 0;
 		randomNode.value = Math.random();
-		energyNode.value = this.energy / this.maxEnergy;
-		upNode.value = this.manager.getKey("ArrowUp") ? 1 : 0;
-		leftNode.value = this.manager.getKey("ArrowLeft") ? 1 : 0;
-		rightNode.value = this.manager.getKey("ArrowRight") ? 1 : 0;
+		energyNode.value = this.energy / this.genome.traitGenes.maxEnergy;
+		upNode.value = window.gameManager.getKey("ArrowUp") ? 1 : 0;
+		leftNode.value = window.gameManager.getKey("ArrowLeft") ? 1 : 0;
+		rightNode.value = window.gameManager.getKey("ArrowRight") ? 1 : 0;
 
 		const nnResults = this.brain.evaluate();
 
@@ -92,25 +98,6 @@ export default class Amoeba extends Animal {
 			const outputValue = nnResults[this.brain.nodes.find(n => n.name === action).id];
 			this.actionMap[action](outputValue, delta);
 		});
-		
-
-		this.spendEnergy(this.genome.traitGenes.restingCost * delta);
-	}
-
-	move(vec){
-		if(this.energy <= 0) return;
-		this.x += vec.x;
-		this.y += vec.y;
-	
-		
-		// collision with borders
-		if(this.x < 0 || this.x > this.manager.app.width){
-			this.x = Math.min(Math.max(this.x, 0), this.manager.app.width);
-		}
-		if(this.y < 0 || this.y > this.manager.app.height){
-			this.y = Math.min(Math.max(this.y, 0), this.manager.app.height);
-		}
-		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost);
 	}
 
 	rotate(amount){
@@ -121,6 +108,6 @@ export default class Amoeba extends Animal {
 	layEgg(){
 		const spawnPos = new Vec2(this.position.x, this.position.y);
 		// let egg = new Egg(genome);
-		this.manager.app.addChild(new Amoeba(spawnPos, this.genome, this.manager));
+		window.gameManager.app.addChild(new Amoeba(spawnPos, this.genome));
 	}
 }
