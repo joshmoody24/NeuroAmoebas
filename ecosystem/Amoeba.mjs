@@ -128,7 +128,7 @@ export default class Amoeba extends Animal {
 		this.gainEnergy(touchingEnergy);
 		foodTouching.forEach(f => {
 			window.gameManager.app.stage.removeChild(f);
-			//f.destroy();
+			f.destroy(true);
 		});
 	}
 

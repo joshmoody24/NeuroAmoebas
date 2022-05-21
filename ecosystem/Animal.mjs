@@ -22,6 +22,7 @@ export default class Animal extends Circle {
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost;
 		this.spendEnergy((metabolism + neuronCost) * delta);
+		if(this.killAtEndofFrame) this.die();
 	}
 
 	// the basic traits that all animals have
@@ -56,9 +57,15 @@ export default class Animal extends Circle {
 	}
 	
 
+	// only die at the end of the update function
+	// to prevent weird bugs
 	die(){
 		window.gameManager.app.stage.removeChild(this);
-		//this.destroy();
+		this.destroy(true);
+	}
+	
+	prepareToDie(){
+		this.killAtEndofFrame = true;
 	}
 
 
@@ -66,7 +73,7 @@ export default class Animal extends Circle {
 		this.energy -= amount;
 		if(this.energy < 0){
 			this.energy = 0;
-			this.die();
+			this.prepareToDie();
 		}
 	}
 
