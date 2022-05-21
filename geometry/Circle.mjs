@@ -14,6 +14,10 @@ export default class Circle extends PIXI.Graphics {
 		this.isFood = true;
 	}
 
+	getPosition(){
+		return new Vec2(this.x, this.y);
+	}
+
 	collide(other) {
 		let dx = other.x - this.x;
 		let dy = other.y - this.y;

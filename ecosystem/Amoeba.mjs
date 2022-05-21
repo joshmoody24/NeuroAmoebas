@@ -6,6 +6,7 @@ import Activations from "../neural/Activations.mjs";
 import ConnectionGene from '../genetics/ConnectionGene.mjs';
 import Vec2 from "../geometry/Vec2.mjs";
 import Food from './Food.mjs';
+import Raycast from "../geometry/Raycast.mjs";
 
 export default class Amoeba extends Animal {
 	constructor(position, genome) {
@@ -94,7 +95,7 @@ export default class Amoeba extends Animal {
 		const leftNode = this.brain.nodes.find(n => n.name === "left_pressed");
 		const rightNode = this.brain.nodes.find(n => n.name === "right_pressed");
 
-		foodDistanceNode.value = 0;
+		foodDistanceNode.value = this.distanceToFood();
 		randomNode.value = Math.random();
 		energyNode.value = this.energy / this.genome.traitGenes.maxEnergy;
 		onNode.value = 1;
@@ -129,6 +130,17 @@ export default class Amoeba extends Animal {
 	rotate(amount){
 		this.rotation += amount;
 		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost);
+	}
+
+	distanceToFood(){
+		// cast in front
+		const sightRange = 100;
+		const lookDir = new Vec2(Math.cos(this.x), Math.cos(this.y)).normalized();
+		const foods = window.gameManager.app.stage.children.filter(o => o instanceof Food);
+		if(foods.length === 0) return 1;
+		const visibleFoods = Raycast(this.getPosition(), lookDir, foods);
+		if(visibleFoods.length === 0) return 1;
+		return Vec2.distance(this.getPosition(), visibleFoods[0].getPosition()) / sightRange;
 	}
 
 	layEgg(){

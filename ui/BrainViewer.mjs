@@ -79,8 +79,6 @@ export default class BrainViewer {
 
             const lineWidth = 2;
             const lineColor = c.weight > 0 ? 0xff0000 : 0x0055ff;
-            console.log(c.weight);
-            console.log(lineColor);
             const alpha = Math.abs(c.weight) / window.gameConfig.maxWeight;
 
             const lineRenderer = new LineRenderer(

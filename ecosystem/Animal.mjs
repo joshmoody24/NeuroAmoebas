@@ -33,7 +33,7 @@ export default class Animal extends Circle {
 			moveSpeed: 1,
 			rotateSpeed: 1,
 			color: 0x33ffcc,
-			neuronCost: 0.0001,
+			neuronCost: 0.001,
 			reproductionCost: 0.1,
 		}
 
