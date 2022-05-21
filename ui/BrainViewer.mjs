@@ -23,7 +23,6 @@ export default class BrainViewer {
             const oldest = amoebas.find(a => a.lifetime === longestLife);
             if(oldest && oldest != this.animal){
                 this.loadBrain(oldest);
-                console.log("new oldest");
             }
         }
     }

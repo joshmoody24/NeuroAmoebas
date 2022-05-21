@@ -7,8 +7,8 @@ export default class ConnectionGene extends Gene {
         this.outputInnovationNumber = outputInnovationNumber;
 	this.enabled = true;
         // randomly initialize weight between min and max
-        const maxWeight = 2;
-        const minWeight = -2;
+        const maxWeight = window.gameConfig.maxWeight;
+        const minWeight = -maxWeight;
         const weightRange = maxWeight - minWeight;
         this.weight = weight ?? Math.random() * weightRange + minWeight;
 

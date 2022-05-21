@@ -16,11 +16,14 @@ export default class Genome {
 		// TODO: make this part of the config file
 		// currently only allows one mutation max
 		// TODO: allow multiple mutations as option
-		const addNodeChance = .2;
-		const deleteNodeChance = .2;
-		const addConnectionChance = .3;
-		const deleteConnectionChance = .3;
-		const combined = addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance;
+		const addNodeChance = 2;
+		const deleteNodeChance = 2;
+		const addConnectionChance = 3;
+		const deleteConnectionChance = 3;
+		const editBiasChance = 2;
+		const editWeightChance = 2;
+
+		const combined = addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance + editBiasChance + editWeightChance;
 		const totalChance = Math.max(1, combined);
 		const r = Math.random();
 		
@@ -38,6 +41,12 @@ export default class Genome {
 		}
 		else if(r < (addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance) / totalChance){
 			return Genome.Mutate_DeleteConnection(newGenome);
+		}
+		else if(r < (addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance + editBiasChance) / totalChance){
+			return Genome.Mutate_EditBias(newGenome);
+		}
+		else if(r < (addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance + editBiasChance + editWeightChance) / totalChance){
+			return Genome.Mutate_EditWeight(newGenome);
 		}
 		else return newGenome;
 	}
@@ -98,8 +107,49 @@ export default class Genome {
 		genome.connectionGenes = genome.connectionGenes.filter(cg => cg !== toRemove);
 		return genome;
 	}
+
+	static Mutate_EditWeight(genome){
+		// TODO: add to some config somewhere
+		const weightMutationPercentage = 0.1;
+
+		let connection = randomElement(genome.connectionGenes);
+		if(connection === undefined) return genome;
+
+		// the max change is proportional to how big the weight currently is
+		// (so it's always a change that will make the same relative impact)
+		const maxChange = Math.abs (connection.weight * weightMutationPercentage);
+		const change = randomBetween(-maxChange, maxChange);
+
+		connection.weight += change;
+		connection.weight = clamp(connection.weight, -window.gameConfig.maxWeight, window.gameConfig.maxWeight);
+		return genome;
+	}
+
+	static Mutate_EditBias(genome){
+		// TODO: add to some config somewhere
+		const weightMutationPercentage = 0.1;
+
+		let node = randomElement(genome.nodeGenes);
+		if(node === undefined) return genome;
+
+		const maxChange = Math.abs (node.bias * weightMutationPercentage);
+		const change = randomBetween(-maxChange, maxChange);
+
+		node.bias += change;
+		node.bias = clamp(node.bias, -window.gameConfig.maxBias, window.gameConfig.maxBias)
+		return genome;
+	}
 }
 
 function randomElement(arr){
 	return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomBetween(min, max){
+	const range = max - min;
+	return Math.random() * range + min;
+}
+
+function clamp(val, min, max){
+	return Math.min(Math.max(val, min), max)
 }

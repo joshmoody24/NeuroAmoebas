@@ -6,8 +6,8 @@ export default class NodeGene extends Gene{
         this.innovationNumber = innovationNumber;
 
         // randomly initialize weight between min and max
-        const maxBias = 4;
-        const minBias = -4;
+        const maxBias = window.gameConfig.maxBias;
+        const minBias = -maxBias;
         const biasRange = maxBias - minBias;
         this.bias = bias ?? (Math.random() * biasRange + minBias);
         
