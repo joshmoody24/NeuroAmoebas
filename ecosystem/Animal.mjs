@@ -33,8 +33,7 @@ export default class Animal extends Circle {
 			moveSpeed: 1,
 			rotateSpeed: 1,
 			color: 0x33ffcc,
-			neuronCost: 0.000,
-			reproductionCost: 0.1,
+			neuronCost: 0.0003,
 		}
 
 		return baseTraitGenes;

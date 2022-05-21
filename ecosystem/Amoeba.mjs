@@ -72,7 +72,7 @@ export default class Amoeba extends Animal {
 			rotateCost: 0.001,
 			reproductionCooldown: 12,
 			sightRange: 500,
-			mutationRate: 0.3,
+			mutationRate: 0.5,
 			size: .5,
 			maxEnergy: 3,
 			startingEnergy: 1,
