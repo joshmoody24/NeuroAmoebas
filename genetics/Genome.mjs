@@ -1,6 +1,7 @@
 import ConnectionGene from './ConnectionGene.mjs';
 import NodeGene from './NodeGene.mjs';
 import NodeType from './NodeType.mjs';
+import { RandomActivation } from '../neural/Activations.mjs';
 
 export default class Genome {
 	constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes, hiddenNodeGenes = []){
@@ -56,7 +57,7 @@ export default class Genome {
 		let conn = randomElement(genome.connectionGenes);
 		// if no connections, return
 		if(!conn) return genome;
-		let newNode = new NodeGene(manager.nextInnovationNumber(), NodeType.HIDDEN, "Sigmoid");
+		let newNode = new NodeGene(manager.nextInnovationNumber(), NodeType.HIDDEN, RandomActivation());
 		// conn.enabled = false;
 		// TODO ^
 		const newConn1 = new ConnectionGene(

@@ -7,6 +7,7 @@ import ConnectionGene from '../genetics/ConnectionGene.mjs';
 import Vec2 from "../geometry/Vec2.mjs";
 import Food from './Food.mjs';
 import Raycast from "../geometry/Raycast.mjs";
+import Connection from "../neural/Connection.mjs";
 
 export default class Amoeba extends Animal {
 	constructor(position, genome) {
@@ -33,7 +34,7 @@ export default class Amoeba extends Animal {
 	static InitialGenome(){
 		const baseTraits = Animal.baseTraits();
 
-		const senseNames = ["random", "energy", "food_distance", "pulse", "on",]// "up_pressed", "left_pressed", "right_pressed"];
+		const senseNames = ["energy", "food_distance", "pulse",]// "random", "on", "up_pressed", "left_pressed", "right_pressed"];
 		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
@@ -49,26 +50,32 @@ export default class Amoeba extends Animal {
 		*/
 
 		const moveNodeId = amoebaActions.find(n => n.name === "move_forward").innovationNumber;
+		const foodNodeId = amoebaSenses.find(n => n.name === "food_distance").innovationNumber;
 		const rotateNodeId = amoebaActions.find(n => n.name === "rotate").innovationNumber;
+		const pulseNodeId = amoebaSenses.find(n => n.name === "pulse").innovationNumber;
 
 		
-		const amoebaConnections = []/*
+		const amoebaConnections = [/* */
 			// temp
-			new ConnectionGene(window.gameManager.nextInnovationNumber(), upNodeId, moveNodeId, 1),
-			new ConnectionGene(window.gameManager.nextInnovationNumber(), leftNodeId, rotateNodeId, -1),
-			new ConnectionGene(window.gameManager.nextInnovationNumber(), rightNodeId, rotateNodeId, 1),
-
+			//new ConnectionGene(window.gameManager.nextInnovationNumber(), upNodeId, moveNodeId, 1),
+			//new ConnectionGene(window.gameManager.nextInnovationNumber(), leftNodeId, rotateNodeId, -1),
+			//new ConnectionGene(window.gameManager.nextInnovationNumber(), rightNodeId, rotateNodeId, 1),
+			//new ConnectionGene(window.gameManager.nextInnovationNumber(), foodNodeId, rotateNodeId, 1),
+			//new ConnectionGene(window.gameManager.nextInnovationNumber(), pulseNodeId, moveNodeId, 1),
 		];
-		*/		
 
 		const amoebaTraits = {
 			color: 0x33ffcc,
-			moveSpeed: 80,
-			rotateSpeed: 10,
+			moveSpeed: 20,
+			rotateSpeed: 3,
 			moveCost: .001,
-			rotateCost: 0.005,
-			restingCost: 0.01,
-			reproductionCooldown: 5,
+			rotateCost: 0.001,
+			reproductionCooldown: 12,
+			sightRange: 500,
+			mutationRate: 0.3,
+			size: .5,
+			maxEnergy: 3,
+			startingEnergy: 1,
 		};
 
 		const traitGenes = {...baseTraits, ...amoebaTraits}
@@ -89,17 +96,15 @@ export default class Amoeba extends Animal {
 		const foodDistanceNode = this.brain.nodes.find(n => n.name === "food_distance");
 		const randomNode = this.brain.nodes.find(n => n.name === "random");
 		const energyNode = this.brain.nodes.find(n => n.name === "energy");
-		const onNode = this.brain.nodes.find(n => n.name === "on");
 		const pulseNode = this.brain.nodes.find(n => n.name === "pulse");
 		const upNode = this.brain.nodes.find(n => n.name === "up_pressed");
 		const leftNode = this.brain.nodes.find(n => n.name === "left_pressed");
 		const rightNode = this.brain.nodes.find(n => n.name === "right_pressed");
 
 		foodDistanceNode.value = this.distanceToFood();
-		randomNode.value = Math.random();
+		//randomNode.value = Math.random();
 		energyNode.value = this.energy / this.genome.traitGenes.maxEnergy;
-		onNode.value = 1;
-		pulseNode.value = Math.abs(Math.sin(new Date() * 0.002));
+		pulseNode.value = Math.abs(Math.sin(new Date() * 0.02));
 		//upNode.value = window.gameManager.getKey("ArrowUp") ? 1 : 0;
 		//leftNode.value = window.gameManager.getKey("ArrowLeft") ? 1 : 0;
 		//rightNode.value = window.gameManager.getKey("ArrowRight") ? 1 : 0;
@@ -134,23 +139,27 @@ export default class Amoeba extends Animal {
 
 	distanceToFood(){
 		// cast in front
-		const sightRange = 100;
-		const lookDir = new Vec2(Math.cos(this.x), Math.cos(this.y)).normalized();
+		const sightRange = this.genome.traitGenes.sightRange;
+		const lookDir = new Vec2(Math.cos(this.rotation), Math.sin(this.rotation)).normalized();
 		const foods = window.gameManager.app.stage.children.filter(o => o instanceof Food);
 		if(foods.length === 0) return 1;
-		const visibleFoods = Raycast(this.getPosition(), lookDir, foods);
+		const visibleFoods = Raycast(this.getPosition(), lookDir, foods, sightRange);
 		if(visibleFoods.length === 0) return 1;
-		return Vec2.distance(this.getPosition(), visibleFoods[0].getPosition()) / sightRange;
+		const dist = Vec2.distance(this.getPosition(), visibleFoods[0].getPosition());
+		const distScaled = dist / sightRange;
+		return distScaled;
 	}
 
 	layEgg(){
-		if(this.energy < this.genome.traitGenes.reproductionCost) return;
+		if(this.energy < this.genome.traitGenes.startingEnergy * 2) return;
 		const spawnPos = new Vec2(this.position.x, this.position.y);
 		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
-		const baby = new Amoeba(spawnPos, Genome.GetMutatedGenome(this.genome));
+		let genome = this.genome;
+		if(Math.random() < genome.traitGenes.mutationRate) genome = Genome.GetMutatedGenome(genome);
+		const baby = new Amoeba(spawnPos, genome);
 		baby.generation = this.generation + 1;
 		window.gameManager.app.stage.addChild(baby);
-		this.spendEnergy(this.genome.traitGenes.reproductionCost);
+		this.spendEnergy(this.genome.traitGenes.startingEnergy);
 	}
 }

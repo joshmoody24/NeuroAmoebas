@@ -29,14 +29,15 @@ export default class BrainViewer {
 
     loadBrain(animal){
         this.animal = animal;
+        animal.changeColor(0xffff00);
         // purge stage
         this.hud.stage.removeChildren();
         
         // draw the nodes
 
         const inputX = 20;
-        const hiddenX = 50;
-        const outputX = 80;
+        const hiddenX = 256;
+        const outputX = 492;
 
         const startY = 20;
         const yGap = 30;

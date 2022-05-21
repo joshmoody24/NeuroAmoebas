@@ -6,6 +6,17 @@ import Food from './ecosystem/Food.mjs';
 import Manager from './ecosystem/Manager.mjs';
 import BrainViewer from './ui/BrainViewer.mjs';
 import Genome from './genetics/Genome.mjs';
+import FoodSpawner from './ecosystem/FoodSpawner.mjs';
+import Raycast from './geometry/Raycast.mjs';
+
+// raycast testing
+const circle = {};
+circle.x = 49;
+circle.y = 50;
+circle.radius = 10;
+let origin = new Vec2(0,0);
+let dir = new Vec2(1,1);
+console.log(Raycast(origin, dir, [circle], 100));
 
 window.gameConfig = Config;
 let width = window.gameConfig.width;
@@ -28,6 +39,8 @@ function RandomScreenPos(padding){
 	return new Vec2(x,y);
 }
 
+window.gameManager.randomScreenPos = RandomScreenPos;
+
 const animals = [];
 for(let i = 0; i < window.gameConfig.startingAnimals; i++){
 	// mutate the genome
@@ -41,15 +54,13 @@ for(let i = 0; i < window.gameConfig.startingAnimals; i++){
 	);
 }
 
-const foods = [];
-for(let i = 0; i < window.gameConfig.startingFood; i++){
-	SpawnFood();
-}
+const foodSpawner = new FoodSpawner();
+foodSpawner.spawnFoods(window.gameConfig.startingFood);
 
+let gameObjects = [...animals];
+let objects = [foodSpawner];
 
-let objects = [...animals, ...foods, ]//...lines];
-
-objects.forEach(o => app.stage.addChild(o));
+gameObjects.forEach(o => app.stage.addChild(o));
 
 app.renderer.backgroundColor = 0x456268;
 document.querySelector("div#canvas").appendChild(app.view);
@@ -58,6 +69,8 @@ const lifetimeCounter = document.querySelector("span#max-lifetime");
 const generationCounter = document.querySelector("span#generation");
 
 app.ticker.add((delta) => {
+
+	const deltaMS = app.ticker.elapsedMS * window.gameConfig.timeScale/1000;
 
 	// temp, add this to class later
 	// find longest-living amoeba
@@ -70,8 +83,10 @@ app.ticker.add((delta) => {
 	}
 
 	app.stage.children.forEach(o => {
-		o.update((app.ticker.elapsedMS * window.gameConfig.timeScale)/1000);
+		o.update(deltaMS);
 	});
+
+	objects.forEach(o => o.update(deltaMS));
 });
 
 hud.renderer.backgroundColor = 0x333333;
@@ -94,17 +109,6 @@ window.onresize = () => {
 }
 
 window.onresize();
-
-function SpawnFood(){
-	let foodToSpawn = new Food(RandomScreenPos(10), 0xfcf8ec, 1);
-	app.stage.addChild(foodToSpawn);
-}
-
-window.setInterval(() => {
-	for(let i = 0; i < window.gameConfig.foodPerSecond; i++){
-		SpawnFood();
-	}
-}, 1000);
 
 const fpsCounter = document.querySelector("span#fps-display");
 window.setInterval(() => fpsCounter.innerHTML = Math.round(app.ticker.FPS));

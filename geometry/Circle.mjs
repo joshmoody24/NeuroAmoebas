@@ -6,12 +6,21 @@ export default class Circle extends PIXI.Graphics {
 		const sizeScale = 10;
 		this.radius = radius * sizeScale;
 		this.velocity = new Vec2(0,0);
-		this.beginFill(color);
-		this.drawCircle(0, 0, radius * sizeScale);
-		this.endFill();
+		this.drawColoredCircle(color, this.radius);
 		this.x = pos.x;
 		this.y = pos.y;
 		this.isFood = true;
+	}
+
+	drawColoredCircle(color, radius){
+		this.beginFill(color);
+		this.drawCircle(0, 0, radius);
+		this.endFill();
+	}
+
+	changeColor(color){
+		this.clear();
+		this.drawColoredCircle(color, this.radius);
 	}
 
 	getPosition(){
