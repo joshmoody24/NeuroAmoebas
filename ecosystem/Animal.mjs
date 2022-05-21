@@ -11,6 +11,7 @@ export default class Animal extends Circle {
 		this.brain = new RecurrentNeuralNetwork(genome);
 		this.energy = genome.traitGenes.startingEnergy;
 		this.lifetime = 0;
+		this.generation = 0;
 	}
 
 	update(delta) {

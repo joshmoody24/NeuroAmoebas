@@ -55,6 +55,7 @@ app.renderer.backgroundColor = 0x456268;
 document.querySelector("div#canvas").appendChild(app.view);
 
 const lifetimeCounter = document.querySelector("span#max-lifetime");
+const generationCounter = document.querySelector("span#generation");
 
 app.ticker.add((delta) => {
 
@@ -63,6 +64,8 @@ app.ticker.add((delta) => {
 	const amoebas = window.gameManager.app.stage.children.filter(a => a instanceof Amoeba);
 	if(amoebas.length > 0){
 		const longestLife = amoebas.reduce((max, amoeba) => amoeba.lifetime > max ? amoeba.lifetime : max, 0);
+		const generation = amoebas.find(a => a.lifetime === longestLife).generation;
+		generationCounter.innerHTML = generation;
 		lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
 	}
 
