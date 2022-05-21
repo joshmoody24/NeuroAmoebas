@@ -10,11 +10,13 @@ export default class Animal extends Circle {
 		this.genome = genome;
 		this.brain = new RecurrentNeuralNetwork(genome);
 		this.energy = genome.traitGenes.startingEnergy;
+		this.lifetime = 0;
 	}
 
 	update(delta) {
+		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size, 2) * Math.PI;
-		const metabolism = this.genome.traitGenes.moveSpeed * area * window.gameConfig.eneryBurnRatio;
+		const metabolism = this.genome.traitGenes.moveSpeed * area * window.gameConfig.energyBurnRatio;
 		this.spendEnergy(metabolism * delta);
 	}
 
@@ -22,7 +24,7 @@ export default class Animal extends Circle {
 	static baseTraits(){
 		const baseTraitGenes = {
 			maxEnergy: 3,
-			startingEnergy: 1,
+			startingEnergy: 2,
 			size: 1,
 			moveSpeed: 1,
 			rotateSpeed: 1,
@@ -39,20 +41,19 @@ export default class Animal extends Circle {
 	
 		
 		// collision with borders
-		if(this.x < 0 || this.x > window.gameManager.app.width){
-			this.x = Math.min(Math.max(this.x, 0), window.gameManager.app.width);
+		if(this.x < 0 || this.x > window.gameManager.app.screen.width){
+			this.x = Math.min(Math.max(this.x, 0), window.gameManager.app.screen.width);
 		}
-		if(this.y < 0 || this.y > window.gameManager.app.height){
-			this.y = Math.min(Math.max(this.y, 0), window.gameManager.app.height);
+		if(this.y < 0 || this.y > window.gameManager.app.screen.height){
+			this.y = Math.min(Math.max(this.y, 0), window.gameManager.app.screen.height);
 		}
 		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost);
 	}
 	
 
 	die(){
-		this.parent.removeChild(this);
-		this.destroy();
-		console.log("dead");
+		window.gameManager.app.stage.removeChild(this);
+		//this.destroy();
 	}
 
 
@@ -66,8 +67,8 @@ export default class Animal extends Circle {
 
 	gainEnergy(amount){
 		this.energy += amount;
-		if(this.energy > this.traitGenes.maxEnergy){
-			this.energy = this.traitGenes.maxEnergy;
+		if(this.energy > this.genome.traitGenes.maxEnergy){
+			this.energy = this.genome.traitGenes.maxEnergy;
 		}
 	}
 

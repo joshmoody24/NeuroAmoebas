@@ -4,6 +4,7 @@ import NodeType from '../genetics/NodeType.mjs';
 import NodeIcon from './NodeIcon.mjs';
 import LineRenderer from '../geometry/LineRenderer.mjs';
 import ConnectionIcon from './ConnectionIcon.mjs';
+import Amoeba from '../ecosystem/Amoeba.mjs';
 
 export default class BrainViewer {
     constructor(hud){
@@ -14,9 +15,21 @@ export default class BrainViewer {
 
     update(){
         this.NodeUIs.forEach(n => n.update());
+
+        // find longest-living amoeba
+        const amoebas = window.gameManager.app.stage.children.filter(a => a instanceof Amoeba);
+        if(amoebas.length > 0){
+            const longestLife = amoebas.reduce((max, amoeba) => amoeba.lifetime > max ? amoeba.lifetime : max, 0);
+            const oldest = amoebas.find(a => a.lifetime === longestLife);
+            if(oldest && oldest != this.animal){
+                this.loadBrain(oldest);
+                console.log("new oldest");
+            }
+        }
     }
 
     loadBrain(animal){
+        this.animal = animal;
         // purge stage
         this.hud.stage.removeChildren();
         
@@ -51,7 +64,7 @@ export default class BrainViewer {
                 x = outputX;
             }
 
-            const radius = 7;
+            const radius = .7;
             const activeColor = 0xffffff;
 
             const nodeIcon = new NodeIcon(node, new Vec2(x,y), activeColor, radius);

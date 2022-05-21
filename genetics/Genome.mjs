@@ -9,7 +9,8 @@ export default class Genome {
 		this.traitGenes = traitGenes;
 	}
 
-	static GetMutatedGenome(genome, manager){
+	static GetMutatedGenome(genome){
+		const manager = window.gameManager;
 		// trait genes do not currently mutate
 		// TODO: make these chances part of the genome itself
 		// TODO: make this part of the config file
@@ -27,19 +28,15 @@ export default class Genome {
 		let newGenome = JSON.parse(JSON.stringify(genome));
 
 		if (r < addNodeChance / totalChance) {
-			console.log("add node");
 			return Genome.Mutate_AddNode(newGenome, manager);
 		}
 		else if(r < (addNodeChance + deleteNodeChance) / totalChance){
-			console.log("delete node");
 			return Genome.Mutate_DeleteNode(newGenome);
 		}
 		else if(r < (addNodeChance + deleteNodeChance + addConnectionChance) / totalChance){
-			console.log("add connection");
 			return Genome.Mutate_AddConnection(newGenome, manager);
 		}
 		else if(r < (addNodeChance + deleteNodeChance + addConnectionChance + deleteConnectionChance) / totalChance){
-			console.log("delete connection");
 			return Genome.Mutate_DeleteConnection(newGenome);
 		}
 		else return newGenome;
@@ -93,7 +90,6 @@ export default class Genome {
 		if(genome.connectionGenes.find(c => c.inputInnovationNumber === inputId && c.outputInnovationNumber === outputId)) return genome;
 
 		genome.connectionGenes.push(new ConnectionGene(manager.nextInnovationNumber(), inputId, outputId));
-		console.log(inputId, outputId);
 		return genome;
 	}
 

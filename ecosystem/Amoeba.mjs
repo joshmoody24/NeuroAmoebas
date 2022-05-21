@@ -5,6 +5,7 @@ import NodeType from '../genetics/NodeType.mjs';
 import Activations from "../neural/Activations.mjs";
 import ConnectionGene from '../genetics/ConnectionGene.mjs';
 import Vec2 from "../geometry/Vec2.mjs";
+import Food from './Food.mjs';
 
 export default class Amoeba extends Animal {
 	constructor(position, genome) {
@@ -25,12 +26,13 @@ export default class Amoeba extends Animal {
 		this.senses = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.INPUT).map(ng => ng.name);
 		this.actions = genome.nodeGenes.filter(ng => ng.nodeType == NodeType.OUTPUT).map(ng => ng.name);
 		this.actionMap = amoebaActionMap;
+		this.timeSinceReproduction = 0;
 	}
 
 	static InitialGenome(){
 		const baseTraits = Animal.baseTraits();
 
-		const senseNames = ["random", "energy", "food_distance", "up_pressed", "left_pressed", "right_pressed"];
+		const senseNames = ["random", "energy", "food_distance", "pulse", "on",]// "up_pressed", "left_pressed", "right_pressed"];
 		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
@@ -39,29 +41,33 @@ export default class Amoeba extends Animal {
 		]
 		const amoebaActions = actionNames.map(action => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.OUTPUT, action.activation, action.name, 0));
 
-
-		const upNodeId = amoebaSenses.find(n => n.name === "up_pressed").innovationNumber;
-		const leftNodeId = amoebaSenses.find(n => n.name === "left_pressed").innovationNumber;
-		const rightNodeId = amoebaSenses.find(n => n.name === "right_pressed").innovationNumber;
+		/*
+		 const upNodeId = amoebaSenses.find(n => n.name === "up_pressed").innovationNumber;
+		 const leftNodeId = amoebaSenses.find(n => n.name === "left_pressed").innovationNumber;
+		 const rightNodeId = amoebaSenses.find(n => n.name === "right_pressed").innovationNumber;
+		*/
 
 		const moveNodeId = amoebaActions.find(n => n.name === "move_forward").innovationNumber;
 		const rotateNodeId = amoebaActions.find(n => n.name === "rotate").innovationNumber;
 
-		const amoebaConnections = [
+		
+		const amoebaConnections = []/*
 			// temp
 			new ConnectionGene(window.gameManager.nextInnovationNumber(), upNodeId, moveNodeId, 1),
 			new ConnectionGene(window.gameManager.nextInnovationNumber(), leftNodeId, rotateNodeId, -1),
 			new ConnectionGene(window.gameManager.nextInnovationNumber(), rightNodeId, rotateNodeId, 1),
 
 		];
+		*/		
 
 		const amoebaTraits = {
 			color: 0x33ffcc,
-			moveSpeed: 2,
-			rotateSpeed: .1,
+			moveSpeed: 80,
+			rotateSpeed: 10,
 			moveCost: .001,
-			rotateCost: 0.0005,
-			restingCost: 0.001,
+			rotateCost: 0.005,
+			restingCost: 0.01,
+			reproductionCooldown: 5,
 		};
 
 		const traitGenes = {...baseTraits, ...amoebaTraits}
@@ -73,7 +79,8 @@ export default class Amoeba extends Animal {
 	}
 
 	update(delta){
-		Animal.prototype.update.call(this, delta);
+		this.eatNearbyFood();
+		this.timeSinceReproduction += delta;
 
 		// get the inputs
 		const inputValues = {};
@@ -81,6 +88,8 @@ export default class Amoeba extends Animal {
 		const foodDistanceNode = this.brain.nodes.find(n => n.name === "food_distance");
 		const randomNode = this.brain.nodes.find(n => n.name === "random");
 		const energyNode = this.brain.nodes.find(n => n.name === "energy");
+		const onNode = this.brain.nodes.find(n => n.name === "on");
+		const pulseNode = this.brain.nodes.find(n => n.name === "pulse");
 		const upNode = this.brain.nodes.find(n => n.name === "up_pressed");
 		const leftNode = this.brain.nodes.find(n => n.name === "left_pressed");
 		const rightNode = this.brain.nodes.find(n => n.name === "right_pressed");
@@ -88,15 +97,32 @@ export default class Amoeba extends Animal {
 		foodDistanceNode.value = 0;
 		randomNode.value = Math.random();
 		energyNode.value = this.energy / this.genome.traitGenes.maxEnergy;
-		upNode.value = window.gameManager.getKey("ArrowUp") ? 1 : 0;
-		leftNode.value = window.gameManager.getKey("ArrowLeft") ? 1 : 0;
-		rightNode.value = window.gameManager.getKey("ArrowRight") ? 1 : 0;
+		onNode.value = 1;
+		pulseNode.value = Math.abs(Math.sin(new Date() * 0.002));
+		//upNode.value = window.gameManager.getKey("ArrowUp") ? 1 : 0;
+		//leftNode.value = window.gameManager.getKey("ArrowLeft") ? 1 : 0;
+		//rightNode.value = window.gameManager.getKey("ArrowRight") ? 1 : 0;
 
 		const nnResults = this.brain.evaluate();
 
 		Object.keys(this.actionMap).forEach(action => {
 			const outputValue = nnResults[this.brain.nodes.find(n => n.name === action).id];
 			this.actionMap[action](outputValue, delta);
+		});
+
+		if(this.timeSinceReproduction > this.genome.traitGenes.reproductionCooldown) this.layEgg();
+
+		Animal.prototype.update.call(this, delta);
+	}
+
+	eatNearbyFood(){
+		const food = window.gameManager.app.stage.children.filter(c => c instanceof Food);
+		const foodTouching = food.filter(f => this.collide(f));
+		const touchingEnergy = foodTouching.reduce((sum, f) => sum += f.energy, 0);
+		this.gainEnergy(touchingEnergy);
+		foodTouching.forEach(f => {
+			window.gameManager.app.stage.removeChild(f);
+			//f.destroy();
 		});
 	}
 
@@ -106,8 +132,9 @@ export default class Amoeba extends Animal {
 	}
 
 	layEgg(){
-		const spawnPos = new Vec2(this.position.x, this.position.y);
+		const spawnPos = new Vec2(this.position.x - 10, this.position.y - 10);
+		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
-		window.gameManager.app.addChild(new Amoeba(spawnPos, this.genome));
+		window.gameManager.app.stage.addChild(new Amoeba(spawnPos, Genome.GetMutatedGenome(this.genome)));
 	}
 }

@@ -1,6 +1,10 @@
 {
-    "startingAnimals": 1,
-    "energyBurnRatio": 0.001,
+    "startingAnimals": 30,
+    "startingFood": 100,
+    "foodPerSecond": 30,
+    "energyBurnRatio": 0.002,
     "width": 512,
-    "height": 512
+    "height": 512,
+    "startingMutations": 10,
+    "timeScale": 5
 }

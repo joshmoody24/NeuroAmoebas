@@ -30,26 +30,44 @@ function RandomScreenPos(padding){
 
 const animals = [];
 for(let i = 0; i < window.gameConfig.startingAnimals; i++){
-	const genome = Amoeba.InitialGenome(manager);
+	// mutate the genome
+	let genome = Amoeba.InitialGenome(manager);
+	for(let j = 0; j < window.gameConfig.startingMutations; j++){
+		genome = Genome.GetMutatedGenome(genome);
+	}
 	const spawnPos = RandomScreenPos(genome.traitGenes.size);
 	animals.push(
 		new Amoeba(spawnPos, genome, manager)
 	);
 }
 
-const foods = [new Food(new Vec2(20,20), 0xfcf8ec, 1)];
+const foods = [];
+for(let i = 0; i < window.gameConfig.startingFood; i++){
+	SpawnFood();
+}
 
 
 let objects = [...animals, ...foods, ]//...lines];
 
 objects.forEach(o => app.stage.addChild(o));
-console.log("Objects:", objects);
 
 app.renderer.backgroundColor = 0x456268;
 document.querySelector("div#canvas").appendChild(app.view);
+
+const lifetimeCounter = document.querySelector("span#max-lifetime");
+
 app.ticker.add((delta) => {
+
+	// temp, add this to class later
+	// find longest-living amoeba
+	const amoebas = window.gameManager.app.stage.children.filter(a => a instanceof Amoeba);
+	if(amoebas.length > 0){
+		const longestLife = amoebas.reduce((max, amoeba) => amoeba.lifetime > max ? amoeba.lifetime : max, 0);
+		lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
+	}
+
 	app.stage.children.forEach(o => {
-		o.update(delta);
+		o.update((app.ticker.elapsedMS * window.gameConfig.timeScale)/1000);
 	});
 });
 
@@ -79,7 +97,11 @@ function SpawnFood(){
 	app.stage.addChild(foodToSpawn);
 }
 
-window.setInterval(SpawnFood, 1000);
+window.setInterval(() => {
+	for(let i = 0; i < window.gameConfig.foodPerSecond; i++){
+		SpawnFood();
+	}
+}, 1000);
 
 const fpsCounter = document.querySelector("span#fps-display");
 window.setInterval(() => fpsCounter.innerHTML = Math.round(app.ticker.FPS));
