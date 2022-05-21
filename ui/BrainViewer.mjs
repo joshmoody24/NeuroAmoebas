@@ -67,8 +67,8 @@ export default class BrainViewer {
         const screenPadding = 20;
         const layerWidth = (window.gameManager.app.screen.width - (screenPadding * 2)) / numLayers;
 
-        const radius = .7;
-        const yGap = 20;
+        const radius = .6;
+        const yGap = 50;
         const activeColor = 0xffffff;
 
         for(let layer = 0; layer <= numLayers; layer++){
@@ -77,7 +77,10 @@ export default class BrainViewer {
             const layerIds = Object.keys(layerTable).filter(key => layerTable[key] === layer).map(k => Number(k));
             const layerNodes = animal.brain.nodes.filter(n => layerIds.indexOf(n.id) !== -1);
             layerNodes.forEach(node => {
-                const nodeIcon = new NodeIcon(node, new Vec2(xPos,yPos), activeColor, radius);
+                // so you can more easily see nodes with connections to the same layer
+                const jitter = 25;
+                const jitteredXPos = xPos + ((Math.random() * 2 - 1) * jitter);
+                const nodeIcon = new NodeIcon(node, new Vec2(node.type === NodeType.HIDDEN ? jitteredXPos : xPos,yPos), activeColor, radius);
                 this.NodeUIs.push(nodeIcon);
                 this.hud.stage.addChild(nodeIcon);
                 yPos += yGap;
