@@ -18,7 +18,10 @@ export default class Animal extends Circle {
 		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size, 2) * Math.PI;
 		const metabolism = this.genome.traitGenes.moveSpeed * area * window.gameConfig.energyBurnRatio;
-		this.spendEnergy(metabolism * delta);
+		// big brains are energy intensive
+		const numNeurons = this.brain.nodes.length;
+		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost;
+		this.spendEnergy((metabolism + neuronCost) * delta);
 	}
 
 	// the basic traits that all animals have
@@ -30,6 +33,7 @@ export default class Animal extends Circle {
 			moveSpeed: 1,
 			rotateSpeed: 1,
 			color: 0x33ffcc,
+			neuronCost: 0.0001,
 		}
 
 		return baseTraitGenes;
