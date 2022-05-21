@@ -1,15 +1,15 @@
 {
-    "startingAnimals": 50,
+    "startingAnimals": 100,
     "startingFood": 200,
     "foodPerSecond": 3,
     "energyBurnRatio": 0.001,
     "width": 512,
     "height": 512,
-    "startingMutations": 3,
+    "startingMutations": 5,
     "timeScale": 10,
     "maxWeight": 2,
     "maxBias": 4,
     "foodEnergy": 1,
-    "foodSize": 0.5,
+    "foodSize": 0.3,
     "traitMutateAmount": 0.2
 }

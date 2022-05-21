@@ -69,7 +69,7 @@ export default class Amoeba extends Animal {
 			color: new Color(1, 1, 1),
 			moveSpeed: 20,
 			rotateSpeed: 3,
-			moveCost: .001,
+			moveCost: .003,
 			rotateCost: 0.001,
 			reproductionCooldown: 12,
 			sightRange: 500,

@@ -23,8 +23,8 @@ let width = window.gameConfig.width;
 let height = window.gameConfig.height;
 
 
-let app = new PIXI.Application({width, height, antialias:true});
-let hud = new PIXI.Application({width, height, antialias:true});
+let app = new PIXI.Application(width, height, {antialias:true});
+let hud = new PIXI.Application(width, height, {antialias:true});
 
 let manager = new Manager();
 window.onkeydown = (e) => manager.setKey(e.key, true);

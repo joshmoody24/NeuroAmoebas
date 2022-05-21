@@ -32,47 +32,57 @@ export default class BrainViewer {
         animal.changeColor(0xffff00);
         // purge stage
         this.hud.stage.removeChildren();
+        this.NodeUIs = [];
         
-        // draw the nodes
-
-        const inputX = 20;
-        const hiddenX = 256;
-        const outputX = 492;
-
-        const startY = 20;
-        const yGap = 30;
-        let inputY = startY;
-        let hiddenY = startY;
-        let outputY = startY;
-
-        animal.brain.nodes.forEach(node => {
-            let x;
-            let y;
-            if(node.type === NodeType.INPUT){
-                y = inputY;
-                inputY += yGap;
-                x = inputX;
-            }
-            if(node.type === NodeType.HIDDEN){
-                y = hiddenY;
-                hiddenY += yGap;
-                x = hiddenX;
-            }
-            if(node.type === NodeType.OUTPUT){
-                y = outputY;
-                outputY += yGap;
-                x = outputX;
-            }
-
-            const radius = .7;
-            const activeColor = 0xffffff;
-
-            const nodeIcon = new NodeIcon(node, new Vec2(x,y), activeColor, radius);
-            
-            this.NodeUIs.push(nodeIcon);
-            this.hud.stage.addChild(nodeIcon);
-
+        // generate a table of nodes to layers
+        // the closer to an input, the lower the layer
+        // stranded nodes automatically get layer 1
+        const layerTable = {}
+        const inputs = animal.brain.nodes.filter(n => n.type === NodeType.INPUT);
+        inputs.forEach(n => {
+            layerTable[n.id] = 0
         });
+
+        const outputIds = animal.brain.nodes.filter(n => n.type === NodeType.OUTPUT).map(n => n.id);
+
+        // repeat until all non-nodes connected to input have been added
+        while(true){
+            const highestLayer = Math.max(...Object.values(layerTable));
+            const lastNodeIds = Object.keys(layerTable).map(key => [Number(key), Number(layerTable[key])]).filter(kv => kv[1] === highestLayer).map(kv => kv[0]);
+            // get all non-output connections from previous layer to nodes not yet assigned a layer
+            const connections = animal.brain.connections.filter(c => (lastNodeIds.indexOf(c.inputId) !== -1) && (outputIds.indexOf(c.outputId) === -1) && (Object.keys(layerTable).map(k => Number(k)).indexOf(c.outputId) === -1));
+            if(connections.length === 0) break;
+            connections.map(c => c.outputId).forEach(id => layerTable[id] = highestLayer + 1);
+        }
+
+        const strandedNodes = animal.brain.nodes.filter(n => n.type === NodeType.HIDDEN && (Object.keys(layerTable).map(k => Number(k)).indexOf(n.id) === -1));
+        strandedNodes.forEach(sn => layerTable[sn.id] = 1);
+
+        // the output nodes need to be readjusted to their proper place
+        const highestLayer = Math.max(...Object.values(layerTable));
+        outputIds.forEach(id => layerTable[id] = highestLayer + 1);
+
+        // compute distance between layers
+        const numLayers = highestLayer + 1;
+        const screenPadding = 20;
+        const layerWidth = (window.gameManager.app.screen.width - (screenPadding * 2)) / numLayers;
+
+        const radius = .7;
+        const yGap = 20;
+        const activeColor = 0xffffff;
+
+        for(let layer = 0; layer <= numLayers; layer++){
+            let yPos = screenPadding;
+            const xPos = (layer * layerWidth) + screenPadding;
+            const layerIds = Object.keys(layerTable).filter(key => layerTable[key] === layer).map(k => Number(k));
+            const layerNodes = animal.brain.nodes.filter(n => layerIds.indexOf(n.id) !== -1);
+            layerNodes.forEach(node => {
+                const nodeIcon = new NodeIcon(node, new Vec2(xPos,yPos), activeColor, radius);
+                this.NodeUIs.push(nodeIcon);
+                this.hud.stage.addChild(nodeIcon);
+                yPos += yGap;
+            })
+        }
 
         // render connections
         animal.brain.connections.forEach(c => {
