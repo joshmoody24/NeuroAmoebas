@@ -1,5 +1,6 @@
 import Genome from '../genetics/Genome.mjs';
 import Circle from '../geometry/Circle.mjs';
+import Color from '../geometry/Color.mjs';
 import RecurrentNeuralNetwork from '../neural/RecurrentNeuralNetwork.mjs';
 
 export default class Animal extends Circle {
@@ -33,7 +34,7 @@ export default class Animal extends Circle {
 			size: 1,
 			moveSpeed: 1,
 			rotateSpeed: 1,
-			color: 0x33ffcc,
+			color: new Color(),
 			neuronCost: 0.0003,
 		}
 

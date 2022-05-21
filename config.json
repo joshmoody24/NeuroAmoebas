@@ -10,5 +10,6 @@
     "maxWeight": 2,
     "maxBias": 4,
     "foodEnergy": 1,
-    "foodSize": 0.5
+    "foodSize": 0.5,
+    "traitMutateAmount": 0.2
 }

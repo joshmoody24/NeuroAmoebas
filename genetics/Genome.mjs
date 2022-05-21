@@ -2,6 +2,7 @@ import ConnectionGene from './ConnectionGene.mjs';
 import NodeGene from './NodeGene.mjs';
 import NodeType from './NodeType.mjs';
 import { RandomActivation } from '../neural/Activations.mjs';
+import { mutateColor } from '../geometry/Color.mjs';
 
 export default class Genome {
 	constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes, hiddenNodeGenes = []){
@@ -30,6 +31,9 @@ export default class Genome {
 		
 		// make a copy of the genome, then mutate it
 		let newGenome = JSON.parse(JSON.stringify(genome));
+
+		// adjust color a lil
+		newGenome.traitGenes.color = mutateColor(newGenome.traitGenes.color, window.gameConfig.traitMutateAmount);
 
 		if (r < addNodeChance / totalChance) {
 			return Genome.Mutate_AddNode(newGenome, manager);

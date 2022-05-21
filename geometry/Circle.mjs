@@ -1,15 +1,17 @@
 import Vec2 from './Vec2.mjs';
+import Color from './Color.mjs';
+import { colorToInt } from './Color.mjs';
 
 export default class Circle extends PIXI.Graphics {
 	constructor(pos, color, radius) {
 		super();
+		if(color.r)	color = colorToInt(color);
 		const sizeScale = 10;
 		this.radius = radius * sizeScale;
 		this.velocity = new Vec2(0,0);
 		this.drawColoredCircle(color, this.radius);
 		this.x = pos.x;
 		this.y = pos.y;
-		this.isFood = true;
 	}
 
 	drawColoredCircle(color, radius){

@@ -8,6 +8,7 @@ import Vec2 from "../geometry/Vec2.mjs";
 import Food from './Food.mjs';
 import Raycast from "../geometry/Raycast.mjs";
 import Connection from "../neural/Connection.mjs";
+import Color from '../geometry/Color.mjs';
 
 export default class Amoeba extends Animal {
 	constructor(position, genome) {
@@ -65,7 +66,7 @@ export default class Amoeba extends Animal {
 		];
 
 		const amoebaTraits = {
-			color: 0x33ffcc,
+			color: new Color(1, 1, 1),
 			moveSpeed: 20,
 			rotateSpeed: 3,
 			moveCost: .001,
