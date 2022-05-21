@@ -136,7 +136,7 @@ export default class Amoeba extends Animal {
 		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
 		const baby = new Amoeba(spawnPos, Genome.GetMutatedGenome(this.genome));
-		baby.generation++;
+		baby.generation = this.generation + 1;
 		window.gameManager.app.stage.addChild(baby);
 	}
 }
