@@ -27,13 +27,14 @@ export default class Animal extends Circle {
 	// the basic traits that all animals have
 	static baseTraits(){
 		const baseTraitGenes = {
-			maxEnergy: 3,
+			maxEnergy: 4,
 			startingEnergy: 2,
 			size: 1,
 			moveSpeed: 1,
 			rotateSpeed: 1,
 			color: 0x33ffcc,
 			neuronCost: 0.0001,
+			reproductionCost: 0.1,
 		}
 
 		return baseTraitGenes;

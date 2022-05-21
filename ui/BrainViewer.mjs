@@ -78,13 +78,17 @@ export default class BrainViewer {
             const connectionIcon = new ConnectionIcon(c);
 
             const lineWidth = 2;
-            const lineColor = 0xff0000;
+            const lineColor = c.weight > 0 ? 0xff0000 : 0x0055ff;
+            console.log(c.weight);
+            console.log(lineColor);
+            const alpha = Math.abs(c.weight) / window.gameConfig.maxWeight;
 
             const lineRenderer = new LineRenderer(
                 this.NodeUIs.find(nui => nui.node.id === connectionIcon.connection.inputId),
                 this.NodeUIs.find(nui => nui.node.id === connectionIcon.connection.outputId),
                 lineWidth,
                 lineColor,
+                alpha
             );
 
             this.hud.stage.addChild(lineRenderer.line);
