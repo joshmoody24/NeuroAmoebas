@@ -29,13 +29,12 @@ export default class Animal extends Circle {
 	// the basic traits that all animals have
 	static baseTraits(){
 		const baseTraitGenes = {
-			maxEnergy: new TraitGene(6, false),
 			startingEnergy: new TraitGene(1, false),
 			size: new TraitGene(1, false),
 			moveSpeed: new TraitGene(1, true),
 			rotateSpeed: new TraitGene(1, true),
 			color: new TraitGene(new Color(), true, "color"),
-			neuronCost: new TraitGene(0.0002, false),
+			neuronCost: new TraitGene(0.0001, false),
 		}
 
 		return baseTraitGenes;
@@ -85,8 +84,9 @@ export default class Animal extends Circle {
 
 	gainEnergy(amount){
 		this.energy += amount;
-		if(this.energy > this.genome.traitGenes.maxEnergy.value){
-			this.energy = this.genome.traitGenes.maxEnergy.value;
+		const maxEnergy = this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea;
+		if(this.energy > maxEnergy){
+			this.energy = maxEnergy;
 		}
 	}
 

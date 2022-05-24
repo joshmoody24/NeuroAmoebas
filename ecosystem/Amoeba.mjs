@@ -71,14 +71,13 @@ export default class Amoeba extends Animal {
 			color: new TraitGene(new Color(1,1,1), true, "color", 0, 1),
 			moveSpeed: new TraitGene(20, true),
 			rotateSpeed: new TraitGene(3, true),
-			moveCost: new TraitGene(0.08, false),
+			moveCost: new TraitGene(0.1, false),
 			rotateCost: new TraitGene(0.03, false),
-			reproductionCooldown: new TraitGene(25, false),
-			sightRange: new TraitGene(400, false),
+			reproductionCooldown: new TraitGene(12, true, "default", 10, 100),
+			sightRange: new TraitGene(150, true, "default", 1, 600),
 			mutationRate: new TraitGene(0.5, true),
 			size: new TraitGene(0.6, true, "default", 0.3, 50),
-			maxEnergy: new TraitGene(300, false),
-			startingEnergy: new TraitGene(100, false),
+			startingEnergy: new TraitGene(80, true, "default", 5, 300),
 		};
 
 		const traitGenes = {...baseTraits, ...amoebaTraits}
@@ -109,7 +108,7 @@ export default class Amoeba extends Animal {
 		enemySizeNode.value = enemyInfo.size;
 		//enemySizeNode.value = enemyInfo.size;
 		randomNode.value = Math.random();
-		energyNode.value = this.energy / this.genome.traitGenes.maxEnergy.value;
+		energyNode.value = this.energy / (this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea);
 		pulseNode.value = Math.abs(Math.sin(new Date() * 0.02));
 
 		const nnResults = this.brain.evaluate();
