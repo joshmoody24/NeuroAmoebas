@@ -1,19 +1,20 @@
 {
-    "startingAnimals": 50,
-    "startingFood": 300,
-    "foodPerSecond": 2,
+    "startingAnimals": 300,
+    "startingFood": 500,
+    "foodPerSecond": 3,
     "maxFood": 1000,
-    "energyBurnRatio": 0.17,
+    "energyBurnRatio": 0.2,
     "width": 512,
     "height": 512,
     "startingMutations": 10,
     "timeScale": 40,
     "maxWeight": 2,
     "maxBias": 4,
-    "foodEnergy": 120,
+    "foodEnergy": 160,
     "foodSize": 0.3,
     "traitMutateAmount": 0.2,
-    "maxEatableSize": 0.81,
+    "maxEatableSize": 0.88,
     "digestionEfficiency": 0.9,
-    "maxEnergyPerArea": 1000
+    "maxEnergyPerArea": 1000,
+    "photosynthesisEnergy": 2.1
 }

@@ -3,6 +3,7 @@ import TraitGene from '../genetics/TraitGene.mjs';
 import Circle from '../geometry/Circle.mjs';
 import Color from '../geometry/Color.mjs';
 import RecurrentNeuralNetwork from '../neural/RecurrentNeuralNetwork.mjs';
+import Vec2 from '../geometry/Vec2.mjs';
 
 export default class Animal extends Circle {
 	constructor(position, genome){
@@ -18,11 +19,12 @@ export default class Animal extends Circle {
 	update(delta) {
 		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size.value, 2) * Math.PI;
-		const metabolism = this.genome.traitGenes.moveSpeed.value * area * window.gameConfig.energyBurnRatio;
+		const metabolism = (this.genome.traitGenes.moveSpeed.value * area) * window.gameConfig.energyBurnRatio;
 		// big brains are energy intensive
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
 		this.spendEnergy((metabolism + neuronCost) * delta);
+		this.gainEnergy(this.genome.traitGenes.photosynthesis.value * area * window.gameConfig.photosynthesisEnergy * delta);
 		if(this.killAtEndofFrame) this.die();
 	}
 
@@ -35,6 +37,7 @@ export default class Animal extends Circle {
 			rotateSpeed: new TraitGene(1, true),
 			color: new TraitGene(new Color(), true, "color"),
 			neuronCost: new TraitGene(0.0001, false),
+			photosynthesis: new TraitGene(.5, true, "default", 0, 1),
 		}
 
 		return baseTraitGenes;
@@ -42,6 +45,8 @@ export default class Animal extends Circle {
 
 	move(vec){
 		if(this.energy <= 0) return;
+		const photosynthesisPenalty = 1 - this.genome.traitGenes.photosynthesis.value;
+		vec = Vec2.multiply(vec, photosynthesisPenalty);
 		this.x += vec.x;
 		this.y += vec.y;
 	
