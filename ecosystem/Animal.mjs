@@ -24,7 +24,7 @@ export default class Animal extends Circle {
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
 		this.spendEnergy((metabolism + neuronCost) * delta);
-		this.gainEnergy(this.genome.traitGenes.photosynthesis.value * area * window.gameConfig.photosynthesisEnergy * delta);
+		this.gainEnergy(this.genome.traitGenes.photosynthesis.value * window.gameConfig.photosynthesisEfficiency * area * delta);
 		if(this.killAtEndofFrame) this.die();
 	}
 

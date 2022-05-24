@@ -170,10 +170,10 @@ export default class Amoeba extends Animal {
 	}
 
 	layEgg(){
-		//console.log("laying egg");
+		console.log("laying egg");
 		if(this.energy < this.genome.traitGenes.startingEnergy.value * 2) return;
 		const size = this.genome.traitGenes.size.value;
-		const spawnPos = new Vec2(this.position.x + (.5+(Math.random()*2-1)) * size, this.position.y + (.5+(Math.random()*2-1)) * size);
+		const spawnPos = new Vec2(this.position.x + ((Math.random()*2-1)) * size, this.position.y + ((Math.random()*2-1)) * size);
 		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
 		let genome = this.genome;
