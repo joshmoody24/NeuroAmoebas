@@ -76,7 +76,7 @@ export default class Amoeba extends Animal {
 			reproductionCooldown: new TraitGene(3, true, "default", 10, 100),
 			sightRange: new TraitGene(150, true, "default", 1, 600),
 			mutationRate: new TraitGene(0.5, true),
-			size: new TraitGene(8, true, "default", 2, 100),
+			size: new TraitGene(8, true, "default", 3.2, 100),
 			startingEnergy: new TraitGene(100, true, "default", 5, 300),
 		};
 
@@ -178,7 +178,7 @@ export default class Amoeba extends Animal {
 		const size = this.genome.traitGenes.size.value;
 		// random pos
 		const randRot = Math.random() * Math.PI * 2;
-		const spawnPos = new Vec2(this.position.x + Math.cos(randRot) * size * 5, this.position.y + Math.sin(randRot) * size * 5);
+		const spawnPos = new Vec2(this.position.x + Math.cos(randRot) * Math.sqrt(size) * 15, this.position.y + Math.sin(randRot) * Math.sqrt(size) * 15);
 		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
 		let genome = this.genome;

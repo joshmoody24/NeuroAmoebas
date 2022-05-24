@@ -13,7 +13,7 @@
     "foodEnergy": 160,
     "foodSize": 0.3,
     "traitMutateAmount": 0.2,
-    "maxEatableSize": 0.999,
+    "maxEatableSize": 0.99,
     "maxEnergyPerArea": 1200,
     "photosynthesisEfficiency": 0.9,
     "illuminationPercent": 0.5
