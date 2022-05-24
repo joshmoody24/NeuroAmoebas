@@ -34,6 +34,9 @@ export default class Genome {
 
 		// adjust color a lil
 		newGenome.traitGenes.color = mutateColor(newGenome.traitGenes.color, window.gameConfig.traitMutateAmount);
+		// temp: adjust size a lil
+		newGenome.traitGenes.size = this.Mutate_TraitGene(newGenome.traitGenes.size);
+		newGenome.traitGenes.moveSpeed = this.Mutate_TraitGene(newGenome.traitGenes.moveSpeed);
 
 		if (r < addNodeChance / totalChance) {
 			return Genome.Mutate_AddNode(newGenome, manager);
@@ -143,6 +146,12 @@ export default class Genome {
 		node.bias += change;
 		node.bias = clamp(node.bias, -window.gameConfig.maxBias, window.gameConfig.maxBias)
 		return genome;
+	}
+
+	static Mutate_TraitGene(trait){
+			const stepSize = window.gameConfig.traitMutateAmount * trait * (Math.random() * 2 - 1);
+			// TODO: allow for clamping??
+			return trait + stepSize;
 	}
 }
 

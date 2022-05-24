@@ -67,6 +67,7 @@ document.querySelector("div#canvas").appendChild(app.view);
 
 const lifetimeCounter = document.querySelector("span#max-lifetime");
 const generationCounter = document.querySelector("span#generation");
+const avgMoveSpeedCounter = document.querySelector("span#avg-move-speed");
 
 app.ticker.add((delta) => {
 
@@ -81,6 +82,10 @@ app.ticker.add((delta) => {
 		generationCounter.innerHTML = generation;
 		lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
 	}
+
+	// temp
+	const avgMoveSpeed = amoebas.reduce((max, amoeba) => max + amoeba.genome.traitGenes.moveSpeed, 0) / amoebas.length;
+	avgMoveSpeedCounter.innerHTML = Math.round(avgMoveSpeed*100)/100;
 
 	app.stage.children.forEach(o => {
 		o.update(deltaMS);

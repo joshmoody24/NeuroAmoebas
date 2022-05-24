@@ -9,6 +9,7 @@ import Food from './Food.mjs';
 import Raycast from "../geometry/Raycast.mjs";
 import Connection from "../neural/Connection.mjs";
 import Color from '../geometry/Color.mjs';
+import Circle from "../geometry/Circle.mjs";
 
 export default class Amoeba extends Animal {
 	constructor(position, genome) {
@@ -69,8 +70,8 @@ export default class Amoeba extends Animal {
 			color: new Color(1, 1, 1),
 			moveSpeed: 20,
 			rotateSpeed: 3,
-			moveCost: .1,
-			rotateCost: 0.04,
+			moveCost: .08,
+			rotateCost: 0.03,
 			reproductionCooldown: 30,
 			sightRange: 500,
 			mutationRate: 0.5,
@@ -88,7 +89,7 @@ export default class Amoeba extends Animal {
 	}
 
 	update(delta){
-		this.eatNearbyFood();
+		this.checkCollisions();
 		this.timeSinceReproduction += delta;
 
 		// get the inputs
@@ -122,20 +123,23 @@ export default class Amoeba extends Animal {
 		Animal.prototype.update.call(this, delta);
 	}
 
-	eatNearbyFood(){
-		const food = window.gameManager.app.stage.children.filter(c => c instanceof Food);
-		const foodTouching = food.filter(f => this.collide(f));
-		const touchingEnergy = foodTouching.reduce((sum, f) => sum += f.energy, 0);
-		this.gainEnergy(touchingEnergy);
-		foodTouching.forEach(f => {
+	checkCollisions(){
+		const thingsBeingTouched = window.gameManager.app.stage.children.filter(t => t instanceof Circle && this.collide(t));
+		const foodTouching = thingsBeingTouched.filter(f => f instanceof Food);
+		const amoebasTouching = thingsBeingTouched.filter(a => a instanceof Amoeba);
+		const weakAmoebasTouching = amoebasTouching.filter(a => a.genome.traitGenes.size < this.genome.traitGenes.size * window.gameConfig.maxEatableSize);
+
+		this.eatFood(weakAmoebasTouching);
+		this.eatFood(foodTouching);
+	}
+
+	eatFood(foodBeingTouched){
+		const touchingEnergy = foodBeingTouched.reduce((sum, f) => sum += f.energy, 0);
+		this.gainEnergy(touchingEnergy * window.gameConfig.digestionEfficiency);
+		foodBeingTouched.forEach(f => {
 			window.gameManager.app.stage.removeChild(f);
 			f.destroy(true);
 		});
-	}
-
-	rotate(amount){
-		this.rotation += amount;
-		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost);
 	}
 
 	distanceToFood(){

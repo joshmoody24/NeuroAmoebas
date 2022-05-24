@@ -54,7 +54,12 @@ export default class Animal extends Circle {
 		if(this.y < 0 || this.y > window.gameManager.app.screen.height){
 			this.y = Math.min(Math.max(this.y, 0), window.gameManager.app.screen.height);
 		}
-		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost);
+		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost * Math.pow(this.genome.traitGenes.size,2));
+	}
+
+	rotate(amount){
+		this.rotation += amount;
+		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost * Math.pow(this.genome.traitGenes.size,2));
 	}
 	
 
