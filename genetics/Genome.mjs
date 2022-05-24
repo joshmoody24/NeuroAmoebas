@@ -2,7 +2,7 @@ import ConnectionGene from './ConnectionGene.mjs';
 import NodeGene from './NodeGene.mjs';
 import NodeType from './NodeType.mjs';
 import { RandomActivation } from '../neural/Activations.mjs';
-import { mutateColor } from '../geometry/Color.mjs';
+import TraitGene from './TraitGene.mjs';
 
 export default class Genome {
 	constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes, hiddenNodeGenes = []){
@@ -32,11 +32,8 @@ export default class Genome {
 		// make a copy of the genome, then mutate it
 		let newGenome = JSON.parse(JSON.stringify(genome));
 
-		// adjust color a lil
-		newGenome.traitGenes.color = mutateColor(newGenome.traitGenes.color, window.gameConfig.traitMutateAmount);
-		// temp: adjust size a lil
-		newGenome.traitGenes.size = this.Mutate_TraitGene(newGenome.traitGenes.size);
-		newGenome.traitGenes.moveSpeed = this.Mutate_TraitGene(newGenome.traitGenes.moveSpeed);
+		// mutate all trait genes a little bit
+		newGenome = Genome.Mutate_Traits(newGenome);
 
 		if (r < addNodeChance / totalChance) {
 			return Genome.Mutate_AddNode(newGenome, manager);
@@ -148,10 +145,13 @@ export default class Genome {
 		return genome;
 	}
 
-	static Mutate_TraitGene(trait){
-			const stepSize = window.gameConfig.traitMutateAmount * trait * (Math.random() * 2 - 1);
-			// TODO: allow for clamping??
-			return trait + stepSize;
+	static Mutate_Traits(genome){
+		Object.keys(genome.traitGenes).forEach(tg => {
+			if(genome.traitGenes[tg].mutable == true){
+				TraitGene.mutate(genome.traitGenes[tg]);
+			}
+		});
+		return genome;
 	}
 }
 

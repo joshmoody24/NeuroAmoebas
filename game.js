@@ -9,15 +9,6 @@ import Genome from './genetics/Genome.mjs';
 import FoodSpawner from './ecosystem/FoodSpawner.mjs';
 import Raycast from './geometry/Raycast.mjs';
 
-// raycast testing
-const circle = {};
-circle.x = 49;
-circle.y = 50;
-circle.radius = 10;
-let origin = new Vec2(0,0);
-let dir = new Vec2(1,1);
-console.log(Raycast(origin, dir, [circle], 100));
-
 window.gameConfig = Config;
 let width = window.gameConfig.width;
 let height = window.gameConfig.height;
@@ -48,7 +39,7 @@ for(let i = 0; i < window.gameConfig.startingAnimals; i++){
 	for(let j = 0; j < window.gameConfig.startingMutations; j++){
 		genome = Genome.GetMutatedGenome(genome);
 	}
-	const spawnPos = RandomScreenPos(genome.traitGenes.size);
+	const spawnPos = RandomScreenPos(genome.traitGenes.size.value);
 	animals.push(
 		new Amoeba(spawnPos, genome, manager)
 	);
@@ -67,7 +58,10 @@ document.querySelector("div#canvas").appendChild(app.view);
 
 const lifetimeCounter = document.querySelector("span#max-lifetime");
 const generationCounter = document.querySelector("span#generation");
-const avgMoveSpeedCounter = document.querySelector("span#avg-move-speed");
+const averageDisplay = document.querySelector("div#averages");
+
+const fpsHistoryLength = 15;
+const fpsHistory = [];
 
 app.ticker.add((delta) => {
 
@@ -83,13 +77,28 @@ app.ticker.add((delta) => {
 		lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
 	}
 
-	// temp
-	const avgMoveSpeed = amoebas.reduce((max, amoeba) => max + amoeba.genome.traitGenes.moveSpeed, 0) / amoebas.length;
-	avgMoveSpeedCounter.innerHTML = Math.round(avgMoveSpeed*100)/100;
+	// temp avg stats
+	const averages = {};
+	const traitNames = Object.keys(amoebas[0]?.genome.traitGenes).filter(key => amoebas[0].genome.traitGenes[key].mutable === true);
+	traitNames.forEach(name => {
+		if(name === "color") return;
+		const avg = amoebas.reduce((sum, a) => sum + a.genome.traitGenes[name].value, 0) / amoebas.length;
+		averages[name] = avg;
+	});
+
+	//console.log(amoebas[0].genome.traitGenes.reproductionCooldown, amoebas[0].timeSinceReproduction, amoebas[0].energy);
+	//console.log(amoebas);
+
+	// todo: fix injection vulnerability
+	const avgHtml = Object.keys(averages).map(a => "<div>Average " + a + ": " + Math.round(averages[a]*1000)/1000 + "</div>");
+	averageDisplay.innerHTML = avgHtml.join('\n');
 
 	app.stage.children.forEach(o => {
 		o.update(deltaMS);
 	});
+
+	fpsHistory.push(app.ticker.FPS);
+	if(fpsHistory.length > fpsHistoryLength) fpsHistory.shift();
 
 	objects.forEach(o => o.update(deltaMS));
 });
@@ -116,4 +125,4 @@ window.onresize = () => {
 window.onresize();
 
 const fpsCounter = document.querySelector("span#fps-display");
-window.setInterval(() => fpsCounter.innerHTML = Math.round(app.ticker.FPS));
+window.setInterval(() => fpsCounter.innerHTML = Math.round(fpsHistory.reduce((sum, value) => sum + value, 0)/fpsHistory.length));

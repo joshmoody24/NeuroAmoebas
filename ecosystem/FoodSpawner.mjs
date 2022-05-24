@@ -8,7 +8,8 @@ export default class FoodSpawner{
 
     update(delta){
         this.timeSinceLastSpawn += delta;
-        if(this.timeSinceLastSpawn > this.spawnsPerSecond){
+        if(this.timeSinceLastSpawn > this.spawnsPerSecond
+            && window.gameManager.app.stage.children.filter(f => f instanceof Food).length <= window.gameConfig.maxFood - window.gameConfig.foodPerSecond){
             this.spawnFoods(gameConfig.foodPerSecond);
         }
     }

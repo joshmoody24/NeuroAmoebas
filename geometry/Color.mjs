@@ -15,15 +15,6 @@ export function colorToInt(color){
     return r | g | b;
 }
 
-export function mutateColor(color, amount){
-    const rStepSize = color.r * amount * (Math.random() * 2 - 1);
-    const gStepSize = color.g * amount * (Math.random() * 2 - 1);
-    const bStepSize = color.b * amount * (Math.random() * 2 - 1);
-    
-    // color class clamps automatically
-    return new Color(color.r + rStepSize, color.g + gStepSize, color.b + bStepSize);
-}
-
 export function Multiply(color, amount){
     let r = (color >> 16) * amount;
     let g = ((color >> 8) & 0x00ff) * amount;

@@ -1,27 +1,27 @@
 import Genome from '../genetics/Genome.mjs';
+import TraitGene from '../genetics/TraitGene.mjs';
 import Circle from '../geometry/Circle.mjs';
 import Color from '../geometry/Color.mjs';
 import RecurrentNeuralNetwork from '../neural/RecurrentNeuralNetwork.mjs';
 
 export default class Animal extends Circle {
 	constructor(position, genome){
-
-		super(position, genome.traitGenes.color, genome.traitGenes.size);
+		super(position, genome.traitGenes.color.value, genome.traitGenes.size.value);
 
 		this.genome = genome;
 		this.brain = new RecurrentNeuralNetwork(genome);
-		this.energy = genome.traitGenes.startingEnergy;
+		this.energy = genome.traitGenes.startingEnergy.value;
 		this.lifetime = 0;
 		this.generation = 0;
 	}
 
 	update(delta) {
 		this.lifetime += delta;
-		const area = Math.pow(this.genome.traitGenes.size, 2) * Math.PI;
-		const metabolism = this.genome.traitGenes.moveSpeed * area * window.gameConfig.energyBurnRatio;
+		const area = Math.pow(this.genome.traitGenes.size.value, 2) * Math.PI;
+		const metabolism = this.genome.traitGenes.moveSpeed.value * area * window.gameConfig.energyBurnRatio;
 		// big brains are energy intensive
 		const numNeurons = this.brain.nodes.length;
-		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost;
+		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
 		this.spendEnergy((metabolism + neuronCost) * delta);
 		if(this.killAtEndofFrame) this.die();
 	}
@@ -29,13 +29,13 @@ export default class Animal extends Circle {
 	// the basic traits that all animals have
 	static baseTraits(){
 		const baseTraitGenes = {
-			maxEnergy: 6,
-			startingEnergy: 2,
-			size: 1,
-			moveSpeed: 1,
-			rotateSpeed: 1,
-			color: new Color(),
-			neuronCost: 0.0003,
+			maxEnergy: new TraitGene(6, false),
+			startingEnergy: new TraitGene(1, false),
+			size: new TraitGene(1, false),
+			moveSpeed: new TraitGene(1, true),
+			rotateSpeed: new TraitGene(1, true),
+			color: new TraitGene(new Color(), true, "color"),
+			neuronCost: new TraitGene(0.0002, false),
 		}
 
 		return baseTraitGenes;
@@ -54,12 +54,12 @@ export default class Animal extends Circle {
 		if(this.y < 0 || this.y > window.gameManager.app.screen.height){
 			this.y = Math.min(Math.max(this.y, 0), window.gameManager.app.screen.height);
 		}
-		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost * Math.pow(this.genome.traitGenes.size,2));
+		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost.value * Math.pow(this.genome.traitGenes.size.value ,2));
 	}
 
 	rotate(amount){
 		this.rotation += amount;
-		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost * Math.pow(this.genome.traitGenes.size,2));
+		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost.value * Math.pow(this.genome.traitGenes.size.value ,2));
 	}
 	
 
@@ -85,8 +85,8 @@ export default class Animal extends Circle {
 
 	gainEnergy(amount){
 		this.energy += amount;
-		if(this.energy > this.genome.traitGenes.maxEnergy){
-			this.energy = this.genome.traitGenes.maxEnergy;
+		if(this.energy > this.genome.traitGenes.maxEnergy.value){
+			this.energy = this.genome.traitGenes.maxEnergy.value;
 		}
 	}
 
