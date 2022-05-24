@@ -69,14 +69,14 @@ export default class Amoeba extends Animal {
 			color: new Color(1, 1, 1),
 			moveSpeed: 20,
 			rotateSpeed: 3,
-			moveCost: .003,
-			rotateCost: 0.001,
-			reproductionCooldown: 12,
+			moveCost: .1,
+			rotateCost: 0.04,
+			reproductionCooldown: 30,
 			sightRange: 500,
 			mutationRate: 0.5,
 			size: .5,
-			maxEnergy: 3,
-			startingEnergy: 1,
+			maxEnergy: 300,
+			startingEnergy: 100,
 		};
 
 		const traitGenes = {...baseTraits, ...amoebaTraits}

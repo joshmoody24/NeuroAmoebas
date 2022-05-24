@@ -2,14 +2,14 @@
     "startingAnimals": 100,
     "startingFood": 200,
     "foodPerSecond": 3,
-    "energyBurnRatio": 0.001,
+    "energyBurnRatio": 0.03,
     "width": 512,
     "height": 512,
     "startingMutations": 8,
     "timeScale": 10,
     "maxWeight": 2,
     "maxBias": 4,
-    "foodEnergy": 1,
+    "foodEnergy": 25,
     "foodSize": 0.3,
     "traitMutateAmount": 0.2
 }
