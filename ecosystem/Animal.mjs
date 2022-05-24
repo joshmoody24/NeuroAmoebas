@@ -19,7 +19,7 @@ export default class Animal extends Circle {
 	update(delta) {
 		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size.value, 2) * Math.PI;
-		const metabolism = (this.genome.traitGenes.moveSpeed.value * this.genome.traitGenes.photosynthesis.value * area) * window.gameConfig.energyBurnRatio;
+		const metabolism = (this.genome.traitGenes.moveSpeed.value * area) * window.gameConfig.energyBurnRatio;
 		// big brains are energy intensive
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
@@ -45,7 +45,7 @@ export default class Animal extends Circle {
 			rotateSpeed: new TraitGene(1, true),
 			color: new TraitGene(new Color(), true, "color"),
 			neuronCost: new TraitGene(0.0001, false),
-			photosynthesis: new TraitGene(.8, true, "default", 0, 1),
+			photosynthesis: new TraitGene(.9, true, "default", 0, 1),
 		}
 
 		return baseTraitGenes;
@@ -66,12 +66,12 @@ export default class Animal extends Circle {
 		if(this.y < 0 || this.y > window.gameManager.app.screen.height){
 			this.y = Math.min(Math.max(this.y, 0), window.gameManager.app.screen.height);
 		}
-		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost.value * Math.pow(this.genome.traitGenes.size.value ,2));
+		this.spendEnergy(vec.magnitude() * this.genome.traitGenes.moveCost.value * Math.pow(this.genome.traitGenes.size.value ,1));
 	}
 
 	rotate(amount){
 		this.rotation += amount;
-		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost.value * Math.pow(this.genome.traitGenes.size.value ,2));
+		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost.value * Math.pow(this.genome.traitGenes.size.value ,1));
 	}
 	
 
@@ -86,21 +86,28 @@ export default class Animal extends Circle {
 		this.killAtEndofFrame = true;
 	}
 
+	maxEnergy(){
+		return this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea * (1-this.genome.traitGenes.photosynthesis.value);
+	}
 
-	spendEnergy(amount){
-		this.energy -= amount;
+
+	changeEnergy(amount){
+		this.energy += amount;
 		if(this.energy < 0){
 			this.energy = 0;
 			this.prepareToDie();
 		}
+		if(this.energy > this.maxEnergy()){
+			this.energy = this.maxEnergy();
+		}
 	}
 
 	gainEnergy(amount){
-		this.energy += amount;
-		const maxEnergy = this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea;
-		if(this.energy > maxEnergy){
-			this.energy = maxEnergy;
-		}
+		this.changeEnergy(amount);
+	}
+
+	spendEnergy(amount){
+		this.changeEnergy(-amount);
 	}
 
 }

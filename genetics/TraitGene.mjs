@@ -10,9 +10,9 @@ export default class TraitGene {
         this.mutateFunction=mutateFunction;
     }
 
-    static mutate(traitGene){
+    static mutate(traitGene, mutationRate){
         const func = TraitGene.mutateFunctions[traitGene.mutateFunction];
-        traitGene.value = func(traitGene.value, traitGene.min, traitGene.max);
+        traitGene.value = func(traitGene.value, traitGene.min, traitGene.max, mutationRate);
         return traitGene;
     }
 
@@ -21,16 +21,16 @@ export default class TraitGene {
         "color": TraitGene.mutateColor,
     }
 
-    static mutateDefault(trait, min, max, amount=window.gameConfig.traitMutateAmount){
-        const stepSize =amount * trait * (Math.random() * 2 - 1);
+    static mutateDefault(trait, min, max, rate, amount=window.gameConfig.traitMutateAmount){
+        const stepSize = amount * trait * rate * (Math.random() * 2 - 1);
         const result = clamp(trait + stepSize, min, max);
         return result;
     }
     
-    static mutateColor(trait, min, max, amount=window.gameConfig.traitMutateAmount){
-        const rStepSize = trait.r * amount * (Math.random() * 2 - 1);
-        const gStepSize = trait.g * amount * (Math.random() * 2 - 1);
-        const bStepSize = trait.b * amount * (Math.random() * 2 - 1);
+    static mutateColor(trait, min, max, rate, amount=window.gameConfig.traitMutateAmount){
+        const rStepSize = trait.r * amount * rate * (Math.random() * 2 - 1);
+        const gStepSize = trait.g * amount * rate * (Math.random() * 2 - 1);
+        const bStepSize = trait.b * amount * rate * (Math.random() * 2 - 1);
         
         // color class clamps automatically
         const newColor = new Color(

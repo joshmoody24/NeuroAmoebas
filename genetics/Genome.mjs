@@ -3,6 +3,7 @@ import NodeGene from './NodeGene.mjs';
 import NodeType from './NodeType.mjs';
 import { RandomActivation } from '../neural/Activations.mjs';
 import TraitGene from './TraitGene.mjs';
+import Color from '../geometry/Color.mjs';
 
 export default class Genome {
 	constructor(inputNodeGenes, outputNodeGenes, initialConnections, traitGenes, hiddenNodeGenes = []){
@@ -34,6 +35,10 @@ export default class Genome {
 
 		// mutate all trait genes a little bit
 		newGenome = Genome.Mutate_Traits(newGenome);
+
+		// visualize photosynthesis in the green channel
+		newGenome.traitGenes.color.value.g = newGenome.traitGenes.photosynthesis.value;
+
 
 		if (r < addNodeChance / totalChance) {
 			return Genome.Mutate_AddNode(newGenome, manager);
@@ -148,7 +153,7 @@ export default class Genome {
 	static Mutate_Traits(genome){
 		Object.keys(genome.traitGenes).forEach(tg => {
 			if(genome.traitGenes[tg].mutable == true){
-				TraitGene.mutate(genome.traitGenes[tg]);
+				TraitGene.mutate(genome.traitGenes[tg], genome.traitGenes.mutationRate.value);
 			}
 		});
 		return genome;

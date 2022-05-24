@@ -6,8 +6,7 @@ export default class Circle extends PIXI.Graphics {
 	constructor(pos, color, radius) {
 		super();
 		if(color.r)	color = colorToInt(color);
-		const sizeScale = 10;
-		this.radius = radius * sizeScale;
+		this.radius = radius;
 		this.velocity = new Vec2(0,0);
 		this.drawColoredCircle(color, this.radius);
 		this.x = pos.x;

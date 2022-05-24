@@ -67,7 +67,7 @@ export default class BrainViewer {
         const screenPadding = 20;
         const layerWidth = (window.gameManager.app.screen.width - (screenPadding * 2)) / numLayers;
 
-        const radius = .6;
+        const radius = 6;
         const yGap = 50;
         const activeColor = 0xffffff;
 

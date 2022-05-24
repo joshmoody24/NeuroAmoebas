@@ -3,7 +3,7 @@
     "startingFood": 0,
     "foodPerSecond": 0,
     "maxFood": 1000,
-    "energyBurnRatio": 0.2,
+    "energyBurnRatio": 0.01,
     "width": 512,
     "height": 512,
     "startingMutations": 10,
@@ -13,10 +13,8 @@
     "foodEnergy": 160,
     "foodSize": 0.3,
     "traitMutateAmount": 0.2,
-    "maxEatableSize": 0.85,
-    "digestionEfficiency": 0.9,
-    "maxEnergyPerArea": 1000,
-    "photosynthesisEfficiency": 0.6,
-    "illuminationPercent": 0.5,
-    "minSizeForEyes": 0.8
+    "maxEatableSize": 0.999,
+    "maxEnergyPerArea": 1200,
+    "photosynthesisEfficiency": 0.9,
+    "illuminationPercent": 0.5
 }
