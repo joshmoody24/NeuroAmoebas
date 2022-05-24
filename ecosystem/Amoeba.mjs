@@ -69,14 +69,14 @@ export default class Amoeba extends Animal {
 
 		const amoebaTraits = {
 			color: new TraitGene(new Color(1,1,1), true, "color", 0, 1),
-			moveSpeed: new TraitGene(20, true),
+			moveSpeed: new TraitGene(5, true, "default", 1, 100),
 			rotateSpeed: new TraitGene(3, true),
 			moveCost: new TraitGene(0.1, false),
 			rotateCost: new TraitGene(0.03, false),
 			reproductionCooldown: new TraitGene(12, true, "default", 10, 100),
 			sightRange: new TraitGene(150, true, "default", 1, 600),
 			mutationRate: new TraitGene(0.5, true),
-			size: new TraitGene(0.6, true, "default", 0.3, 25),
+			size: new TraitGene(0.8, true, "default", 0.2, 25),
 			startingEnergy: new TraitGene(80, true, "default", 5, 300),
 		};
 
@@ -128,13 +128,14 @@ export default class Amoeba extends Animal {
 		const amoebasTouching = thingsBeingTouched.filter(a => a instanceof Amoeba);
 		const weakAmoebasTouching = amoebasTouching.filter(a => a.genome.traitGenes.size.value < this.genome.traitGenes.size.value * window.gameConfig.maxEatableSize);
 
-		this.eatFood(weakAmoebasTouching);
+		// digesting other amoebas is harder when you are an herbivore
+		this.eatFood(weakAmoebasTouching, 1-this.genome.traitGenes.photosynthesis.value);
 		this.eatFood(foodTouching);
 	}
 
-	eatFood(foodBeingTouched){
+	eatFood(foodBeingTouched, multiplier=1){
 		const touchingEnergy = foodBeingTouched.reduce((sum, f) => sum += f.energy, 0);
-		this.gainEnergy(touchingEnergy * window.gameConfig.digestionEfficiency);
+		this.gainEnergy(touchingEnergy * window.gameConfig.digestionEfficiency * multiplier);
 		foodBeingTouched.forEach(f => {
 			window.gameManager.app.stage.removeChild(f);
 			f.destroy(true);
@@ -143,6 +144,7 @@ export default class Amoeba extends Animal {
 
 	distanceToFood(){
 		// cast in front
+		if(this.genome.traitGenes.size.value < window.gameConfig.minSizeForEyes) return 0;
 		const sightRange = this.genome.traitGenes.sightRange.value;
 		const lookDir = new Vec2(Math.cos(this.rotation), Math.sin(this.rotation)).normalized();
 		const foods = window.gameManager.app.stage.children.filter(o => o instanceof Food);
@@ -156,6 +158,7 @@ export default class Amoeba extends Animal {
 
 	enemyInfo(){
 		// cast in front
+		if(this.genome.traitGenes.size.value < window.gameConfig.minSizeForEyes) return {distance: 0,size: 0};
 		const sightRange = this.genome.traitGenes.sightRange.value;
 		const lookDir = new Vec2(Math.cos(this.rotation), Math.sin(this.rotation)).normalized();
 		const enemies = window.gameManager.app.stage.children.filter(o => o instanceof Amoeba && o !== this);
@@ -170,10 +173,13 @@ export default class Amoeba extends Animal {
 	}
 
 	layEgg(){
-		console.log("laying egg");
+		//console.log("laying egg");
 		if(this.energy < this.genome.traitGenes.startingEnergy.value * 2) return;
 		const size = this.genome.traitGenes.size.value;
-		const spawnPos = new Vec2(this.position.x + ((Math.random()*2-1)) * size, this.position.y + ((Math.random()*2-1)) * size);
+
+		// random pos
+		const randRot = Math.random() * Math.PI * 2;
+		const spawnPos = new Vec2(this.position.x + Math.cos(randRot) * size * 20.1, this.position.y + Math.sin(randRot) * size * 20.1);
 		this.timeSinceReproduction = 0;
 		// let egg = new Egg(genome);
 		let genome = this.genome;

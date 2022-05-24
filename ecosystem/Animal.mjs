@@ -24,7 +24,15 @@ export default class Animal extends Circle {
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
 		this.spendEnergy((metabolism + neuronCost) * delta);
-		this.gainEnergy(this.genome.traitGenes.photosynthesis.value * window.gameConfig.photosynthesisEfficiency * area * delta);
+
+		// photosynthesis is proportional to circumference, not area (2d world rules)
+		this.gainEnergy(
+			this.genome.traitGenes.photosynthesis.value *
+			window.gameConfig.illuminationPercent *
+			window.gameConfig.photosynthesisEfficiency *
+			this.genome.traitGenes.size.value *
+			Math.PI * 2 *
+			delta);
 		if(this.killAtEndofFrame) this.die();
 	}
 
@@ -37,7 +45,7 @@ export default class Animal extends Circle {
 			rotateSpeed: new TraitGene(1, true),
 			color: new TraitGene(new Color(), true, "color"),
 			neuronCost: new TraitGene(0.0001, false),
-			photosynthesis: new TraitGene(.5, true, "default", 0, 1),
+			photosynthesis: new TraitGene(.8, true, "default", 0, 1),
 		}
 
 		return baseTraitGenes;

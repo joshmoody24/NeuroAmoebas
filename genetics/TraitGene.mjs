@@ -2,7 +2,7 @@ import Color from "../geometry/Color.mjs";
 import { clamp } from "../geometry/MathUtils.mjs";
 
 export default class TraitGene {
-    constructor(value, mutable, mutateFunction="default", min=0, max=100){
+    constructor(value, mutable, mutateFunction="default", min=0.01, max=100){
         this.value = value;
         this.mutable = mutable;
         this.min = min;
