@@ -45,7 +45,7 @@ export default class Animal extends Circle {
 			rotateSpeed: new TraitGene(1, true),
 			color: new TraitGene(new Color(), true, "color"),
 			neuronCost: new TraitGene(0.0001, false),
-			photosynthesis: new TraitGene(.9, true, "default", 0, 1),
+			photosynthesis: new TraitGene(.95, true, "default", 0, 1),
 		}
 
 		return baseTraitGenes;
@@ -87,7 +87,7 @@ export default class Animal extends Circle {
 	}
 
 	maxEnergy(){
-		return this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea * (1-this.genome.traitGenes.photosynthesis.value);
+		return Math.pow(this.genome.traitGenes.size.value,2) * window.gameConfig.maxEnergyPerArea * Math.sqrt(1-this.genome.traitGenes.photosynthesis.value);
 	}
 
 
