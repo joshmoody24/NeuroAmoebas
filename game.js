@@ -30,6 +30,18 @@ function RandomScreenPos(padding){
 	return new Vec2(x,y);
 }
 
+// get all the speed controls and add event listeners to them
+const speedButtons = Array.from(document.querySelectorAll('[id^=btn-speed-]'));
+speedButtons.forEach(btn => {
+	const speedVal = parseInt(btn.id.split('-').pop())
+	btn.addEventListener('click', () => {
+		window.gameConfig.timeScale = speedVal;
+		console.log(speedVal);
+		speedButtons.forEach(b => b.className = b.className.replace("btn-primary", "btn-outline-secondary"))
+		btn.className = btn.className.replace('btn-outline-secondary', 'btn-primary');
+	});
+})
+
 window.gameManager.randomScreenPos = RandomScreenPos;
 
 const animals = [];
@@ -64,18 +76,17 @@ const fpsHistoryLength = 15;
 const fpsHistory = [];
 
 app.ticker.add((delta) => {
-
 	const deltaMS = app.ticker.elapsedMS * window.gameConfig.timeScale/1000;
 
 	// temp, add this to class later
 	// find longest-living amoeba
 	const amoebas = window.gameManager.app.stage.children.filter(a => a instanceof Amoeba);
-	if(amoebas.length > 0){
-		const longestLife = amoebas.reduce((max, amoeba) => amoeba.lifetime > max ? amoeba.lifetime : max, 0);
-		const generation = amoebas.find(a => a.lifetime === longestLife).generation;
-		generationCounter.innerHTML = generation;
-		lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
-	}
+	if(amoebas.length < 1) return;
+
+	const longestLife = amoebas.reduce((max, amoeba) => amoeba.lifetime > max ? amoeba.lifetime : max, 0);
+	const generation = amoebas.find(a => a.lifetime === longestLife).generation;
+	generationCounter.innerHTML = generation;
+	lifetimeCounter.innerHTML = Math.round(longestLife*100)/100;
 
 	// temp avg stats
 	const averages = {};

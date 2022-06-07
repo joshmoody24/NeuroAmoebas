@@ -37,7 +37,7 @@ export default class Amoeba extends Animal {
 	static InitialGenome(){
 		const baseTraits = Animal.baseTraits();
 
-		const senseNames = ["energy", "food_distance", "enemy_distance", "enemy_size", "pulse", "random"];
+		const senseNames = ["energy", "food_distance", "enemy_distance", "pulse"]; // other options include "enemy_size" and "random"
 		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
@@ -71,12 +71,12 @@ export default class Amoeba extends Animal {
 			color: new TraitGene(new Color(1,1,1), true, "color", 0, 1),
 			moveSpeed: new TraitGene(20, true),
 			rotateSpeed: new TraitGene(3, true),
-			moveCost: new TraitGene(0.1, false),
-			rotateCost: new TraitGene(0.03, false),
+			moveCost: new TraitGene(.5, false),
+			rotateCost: new TraitGene(0.04, false),
 			reproductionCooldown: new TraitGene(12, true, "default", 10, 100),
 			sightRange: new TraitGene(150, true, "default", 1, 600),
 			mutationRate: new TraitGene(0.5, true),
-			size: new TraitGene(0.6, true, "default", 0.3, 50),
+			size: new TraitGene(0.6, true, "default", 0.5, 50),
 			startingEnergy: new TraitGene(80, true, "default", 5, 300),
 		};
 
@@ -96,18 +96,18 @@ export default class Amoeba extends Animal {
 		const inputValues = {};
 	
 		const foodDistanceNode = this.brain.nodes.find(n => n.name === "food_distance");
-		const randomNode = this.brain.nodes.find(n => n.name === "random");
+		// const randomNode = this.brain.nodes.find(n => n.name === "random");
 		const energyNode = this.brain.nodes.find(n => n.name === "energy");
 		const pulseNode = this.brain.nodes.find(n => n.name === "pulse");
 		const enemyDistNode = this.brain.nodes.find(n => n.name === "enemy_distance");
-		const enemySizeNode = this.brain.nodes.find(n => n.name === "enemy_size");
+		//const enemySizeNode = this.brain.nodes.find(n => n.name === "enemy_size");
 
 		foodDistanceNode.value = this.distanceToFood();
 		const enemyInfo = this.enemyInfo();
 		enemyDistNode.value = enemyInfo.distance;
-		enemySizeNode.value = enemyInfo.size;
+		// enemySizeNode.value = enemyInfo.size;
 		//enemySizeNode.value = enemyInfo.size;
-		randomNode.value = Math.random();
+		// randomNode.value = Math.random();
 		energyNode.value = this.energy / (this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea);
 		pulseNode.value = Math.abs(Math.sin(new Date() * 0.02));
 

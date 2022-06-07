@@ -26,6 +26,20 @@
             </div>
 
             <div class="row">
+                <div id=controls>
+                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-1">Speed x1</button>
+                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-5">Speed x5</button>
+                    <button class="btn btn-primary btn-sm m-1" id="btn-speed-10">Speed x10</button>
+                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-25">Speed x25</button>
+                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-50">Speed x50</button>
+                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-100">Speed x100</button>
+                    <br />
+                    <button class="btn btn-outline-primary m-1" onclick="document.location.reload()">Restart Simulation</button>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <h2>Stats</h2>
                 <div id=score>Current Max Lifetime: <span id="max-lifetime">0</span></div>
             </div>
 
@@ -35,10 +49,6 @@
 
             <div class="row">
                 <div id="averages"></div>
-            </div>
-
-            <div class="row">
-                <div id=controls>Control explanation goes <b>here</b>.</div>
             </div>
 
             <div class="row">
