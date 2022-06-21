@@ -19,9 +19,9 @@ export default class Genome {
 		// currently only allows one mutation max
 		// TODO: allow multiple mutations as option
 		const addNodeChance = 2;
-		const deleteNodeChance = 2;
+		const deleteNodeChance = 3;
 		const addConnectionChance = 3;
-		const deleteConnectionChance = 3;
+		const deleteConnectionChance = 4;
 		const editBiasChance = 2;
 		const editWeightChance = 2;
 
