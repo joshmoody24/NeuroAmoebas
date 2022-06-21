@@ -16,13 +16,12 @@ export default class FoodSpawner{
 
     spawnFoods(amount){
         this.timeSinceLastSpawn = 0;
-        // roll the dice if it's < 1
-        if(amount < 1)
-        {
-            const chance = amount / this.spawnsPerSecond;
-            amount = Math.random() < chance ? 1 : 0;
-        }
-        for(let i = 0; i < amount; i++){
+        // deal with fractional amounts
+        const remainder = amount - Math.floor(amount);
+        const chance = remainder / this.spawnsPerSecond;
+        const spawnAmount = Math.random() < chance ? Math.ceil(amount) : Math.floor(amount);
+                
+        for(let i = 0; i < spawnAmount; i++){
             let foodToSpawn = new Food(window.gameManager.randomScreenPos(window.gameConfig.foodSize), 0xfcf8ec, window.gameConfig.foodSize);
             window.gameManager.app.stage.addChild(foodToSpawn);
         }

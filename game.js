@@ -30,15 +30,17 @@ function RandomScreenPos(padding){
 	return new Vec2(x,y);
 }
 
-// get all the speed controls and add event listeners to them
-const speedButtons = Array.from(document.querySelectorAll('[id^=btn-speed-]'));
-speedButtons.forEach(btn => {
-	const speedVal = parseInt(btn.id.split('-').pop())
-	btn.addEventListener('click', () => {
-		window.gameConfig.timeScale = speedVal;
-		speedButtons.forEach(b => b.className = b.className.replace("btn-primary", "btn-outline-secondary"))
-		btn.className = btn.className.replace('btn-outline-secondary', 'btn-primary');
-	});
+// get the control updater button and add event listener
+const speedControl = document.querySelector('#game-speed');
+const foodPerSecond = document.querySelector('#food-per-second');
+foodPerSecond.value = window.gameConfig.foodPerSecond;
+speedControl.value = window.gameConfig.timeScale;
+
+const controlUpdater = document.querySelector("#config-form");
+controlUpdater.addEventListener('submit', (event) => {
+	event.preventDefault();
+	window.gameConfig.foodPerSecond = parseFloat(foodPerSecond.value);
+	window.gameConfig.timeScale = parseInt(speedControl.value);
 })
 
 window.gameManager.randomScreenPos = RandomScreenPos;

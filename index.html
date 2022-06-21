@@ -27,14 +27,19 @@
 
             <div class="row">
                 <div id=controls>
-                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-1">Speed x1</button>
-                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-5">Speed x5</button>
-                    <button class="btn btn-primary btn-sm m-1" id="btn-speed-10">Speed x10</button>
-                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-25">Speed x25</button>
-                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-50">Speed x50</button>
-                    <button class="btn btn-outline-secondary btn-sm m-1" id="btn-speed-100">Speed x100</button>
-                    <br />
-                    <button class="btn btn-outline-primary m-1" onclick="document.location.reload()">Restart Simulation</button>
+                    <form id="config-form">
+                        <div class="mb-3">
+                            <label for="game-speed" class="form-label">Game Speed</label>
+                            <input type="number" class="form-control" id="game-speed" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="food-per-second" class="form-label">Food Per Second</label>
+                            <input step="0.1" type="number" class="form-control" id="food-per-second" />
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm m-1" type="submit">Update Settings</button>
+                        <br />
+                        <button class="btn btn-outline-primary m-1 btn-sm" onclick="document.location.reload()">Restart Simulation</button>
+                    </form>
                 </div>
             </div>
 

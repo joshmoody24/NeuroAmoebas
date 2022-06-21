@@ -1,7 +1,7 @@
 {
     "startingAnimals": 100,
     "startingFood": 500,
-    "foodPerSecond": 2,
+    "foodPerSecond": 3,
     "maxFood": 800,
     "energyBurnRatio": 0.17,
     "width": 512,
