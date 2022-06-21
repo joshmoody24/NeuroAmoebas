@@ -37,7 +37,7 @@ export default class Amoeba extends Animal {
 	static InitialGenome(){
 		const baseTraits = Animal.baseTraits();
 
-		const senseNames = ["energy", "food_distance", "enemy_distance", "pulse"]; // other options include "enemy_size" and "random"
+		const senseNames = ["energy", "food_distance", "enemy_distance", "enemy_size", "pulse", "random"];
 		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
@@ -96,18 +96,17 @@ export default class Amoeba extends Animal {
 		const inputValues = {};
 	
 		const foodDistanceNode = this.brain.nodes.find(n => n.name === "food_distance");
-		// const randomNode = this.brain.nodes.find(n => n.name === "random");
+		const randomNode = this.brain.nodes.find(n => n.name === "random");
 		const energyNode = this.brain.nodes.find(n => n.name === "energy");
 		const pulseNode = this.brain.nodes.find(n => n.name === "pulse");
 		const enemyDistNode = this.brain.nodes.find(n => n.name === "enemy_distance");
-		//const enemySizeNode = this.brain.nodes.find(n => n.name === "enemy_size");
+		const enemySizeNode = this.brain.nodes.find(n => n.name === "enemy_size");
 
 		foodDistanceNode.value = this.distanceToFood();
 		const enemyInfo = this.enemyInfo();
 		enemyDistNode.value = enemyInfo.distance;
-		// enemySizeNode.value = enemyInfo.size;
-		//enemySizeNode.value = enemyInfo.size;
-		// randomNode.value = Math.random();
+		enemySizeNode.value = enemyInfo.size;
+		randomNode.value = Math.random();
 		energyNode.value = this.energy / (this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea);
 		pulseNode.value = Math.abs(Math.sin(new Date() * 0.02));
 

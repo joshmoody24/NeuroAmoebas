@@ -18,7 +18,8 @@ export default class Animal extends Circle {
 	update(delta) {
 		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size.value, 2) * Math.PI;
-		const metabolism = this.genome.traitGenes.moveSpeed.value * area * window.gameConfig.energyBurnRatio;
+		// add 1 to movespeed otherwise they could have almost zero metabolism
+		const metabolism = (this.genome.traitGenes.moveSpeed.value + 1)* area * window.gameConfig.energyBurnRatio;
 		// big brains are energy intensive
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
