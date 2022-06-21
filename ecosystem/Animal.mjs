@@ -16,10 +16,11 @@ export default class Animal extends Circle {
 	}
 
 	update(delta) {
+		if(isNaN(this.energy)) console.log("AHHHH");
 		this.lifetime += delta;
 		const area = Math.pow(this.genome.traitGenes.size.value, 2) * Math.PI;
 		// add 1 to movespeed otherwise they could have almost zero metabolism
-		const metabolism = (this.genome.traitGenes.moveSpeed.value + 1)* area * window.gameConfig.energyBurnRatio;
+		const metabolism = (this.genome.traitGenes.moveSpeed.value + 1) * area * window.gameConfig.energyBurnRatio;
 		// big brains are energy intensive
 		const numNeurons = this.brain.nodes.length;
 		const neuronCost = numNeurons * this.genome.traitGenes.neuronCost.value;
@@ -58,6 +59,7 @@ export default class Animal extends Circle {
 	}
 
 	rotate(amount){
+		if(isNaN(amount)) throw "rotate amount cannot be null";
 		this.rotation += amount;
 		this.spendEnergy(Math.abs(amount) * this.genome.traitGenes.rotateCost.value * Math.pow(this.genome.traitGenes.size.value ,2));
 	}
@@ -76,6 +78,8 @@ export default class Animal extends Circle {
 
 
 	spendEnergy(amount){
+		let oldEnergy = this.energy;
+		if(isNaN(amount)) throw "Spend energy amount must be a number";
 		this.energy -= amount;
 		if(this.energy < 0){
 			this.energy = 0;

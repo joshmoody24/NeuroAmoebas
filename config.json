@@ -1,8 +1,8 @@
 {
-    "startingAnimals": 50,
-    "startingFood": 400,
-    "foodPerSecond": 4,
-    "maxFood": 1000,
+    "startingAnimals": 100,
+    "startingFood": 500,
+    "foodPerSecond": 2,
+    "maxFood": 800,
     "energyBurnRatio": 0.17,
     "width": 512,
     "height": 512,
@@ -13,7 +13,7 @@
     "foodEnergy": 150,
     "foodSize": 0.3,
     "traitMutateAmount": 0.2,
-    "maxEatableSize": 0.7,
+    "maxEatableSize": 0.72,
     "digestionEfficiency": 0.9,
-    "maxEnergyPerArea": 600
+    "maxEnergyPerArea": 1000
 }

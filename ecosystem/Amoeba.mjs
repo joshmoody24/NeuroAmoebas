@@ -19,11 +19,15 @@ export default class Amoeba extends Animal {
 
 		const amoebaActionMap = {
 			"move_forward": (val, delta) => {
+				if(isNaN(val)) throw "Rotate node val must be a number";
+				if(isNaN(delta)) throw "delta must be a number";
 				const x = Math.cos(this.rotation) * val * this.genome.traitGenes.moveSpeed.value * delta;
 				const y = Math.sin(this.rotation) * val * this.genome.traitGenes.moveSpeed.value * delta;
 				this.move(new Vec2(x,y));
 			},
 			"rotate": (val, delta) => {
+				if(isNaN(val)) throw "Rotate node val must be a number";
+				if(isNaN(delta)) throw "delta must be a number";
 				this.rotate(val * delta * this.genome.traitGenes.rotateSpeed.value);
 			},
 		}
@@ -37,7 +41,7 @@ export default class Amoeba extends Animal {
 	static InitialGenome(){
 		const baseTraits = Animal.baseTraits();
 
-		const senseNames = ["energy", "food_distance", "enemy_distance", "enemy_size", "pulse", "random"];
+		const senseNames = ["energy", "food_distance_center", "food_distance_left", "food_distance_right", "enemy_distance", "enemy_size", "pulse"];
 		const amoebaSenses = senseNames.map(sense => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.INPUT, "Identity", sense, 0));
 
 		const actionNames = [
@@ -45,18 +49,6 @@ export default class Amoeba extends Animal {
 			{name: "rotate", activation: "Identity"},
 		]
 		const amoebaActions = actionNames.map(action => new NodeGene(window.gameManager.nextInnovationNumber(), NodeType.OUTPUT, action.activation, action.name, 0));
-
-		/*
-		 const upNodeId = amoebaSenses.find(n => n.name === "up_pressed").innovationNumber;
-		 const leftNodeId = amoebaSenses.find(n => n.name === "left_pressed").innovationNumber;
-		 const rightNodeId = amoebaSenses.find(n => n.name === "right_pressed").innovationNumber;
-		*/
-
-		const moveNodeId = amoebaActions.find(n => n.name === "move_forward").innovationNumber;
-		const foodNodeId = amoebaSenses.find(n => n.name === "food_distance").innovationNumber;
-		const rotateNodeId = amoebaActions.find(n => n.name === "rotate").innovationNumber;
-		const pulseNodeId = amoebaSenses.find(n => n.name === "pulse").innovationNumber;
-
 		
 		const amoebaConnections = [/* */
 			// temp
@@ -69,15 +61,16 @@ export default class Amoeba extends Animal {
 
 		const amoebaTraits = {
 			color: new TraitGene(new Color(1,1,1), true, "color", 0, 1),
-			moveSpeed: new TraitGene(20, true),
-			rotateSpeed: new TraitGene(3, true),
-			moveCost: new TraitGene(.5, false),
-			rotateCost: new TraitGene(0.04, false),
-			reproductionCooldown: new TraitGene(12, true, "default", 10, 100),
-			sightRange: new TraitGene(150, true, "default", 1, 600),
+			moveSpeed: new TraitGene(8, true),
+			rotateSpeed: new TraitGene(2, true),
+			moveCost: new TraitGene(.3, false),
+			rotateCost: new TraitGene(0.1, false),
+			reproductionCooldown: new TraitGene(12, true, "default", 5, 100),
+			sightRange: new TraitGene(100, true, "default", 1, 500),
 			mutationRate: new TraitGene(0.5, true),
 			size: new TraitGene(0.6, true, "default", 0.5, 50),
-			startingEnergy: new TraitGene(80, true, "default", 5, 300),
+			startingEnergy: new TraitGene(100, true, "default", 5, 400),
+			eyeAngle: new TraitGene(10, true, "default", 0.1, 179),
 		};
 
 		const traitGenes = {...baseTraits, ...amoebaTraits}
@@ -95,20 +88,27 @@ export default class Amoeba extends Animal {
 		// get the inputs
 		const inputValues = {};
 	
-		const foodDistanceNode = this.brain.nodes.find(n => n.name === "food_distance");
-		const randomNode = this.brain.nodes.find(n => n.name === "random");
+		const foodDistanceCenterNode = this.brain.nodes.find(n => n.name === "food_distance_center");
+		const foodDistanceLeftNode = this.brain.nodes.find(n => n.name === "food_distance_left");
+		const foodDistanceRightNode = this.brain.nodes.find(n => n.name === "food_distance_right");
+
+		//const randomNode = this.brain.nodes.find(n => n.name === "random");
 		const energyNode = this.brain.nodes.find(n => n.name === "energy");
 		const pulseNode = this.brain.nodes.find(n => n.name === "pulse");
 		const enemyDistNode = this.brain.nodes.find(n => n.name === "enemy_distance");
 		const enemySizeNode = this.brain.nodes.find(n => n.name === "enemy_size");
 
-		foodDistanceNode.value = this.distanceToFood();
+		const foodData = this.distanceToFood();
+		foodDistanceLeftNode.value = foodData[0];
+		foodDistanceCenterNode.value = foodData[1];
+		foodDistanceRightNode.value = foodData[2];
+
 		const enemyInfo = this.enemyInfo();
 		enemyDistNode.value = enemyInfo.distance;
 		enemySizeNode.value = enemyInfo.size;
-		randomNode.value = Math.random();
+		//randomNode.value = Math.random();
 		energyNode.value = this.energy / (this.genome.traitGenes.size.value * window.gameConfig.maxEnergyPerArea);
-		pulseNode.value = Math.abs(Math.sin(new Date() * 0.02));
+		pulseNode.value = Math.abs(Math.sin(window.gameManager.gameTime));
 
 		const nnResults = this.brain.evaluate();
 
@@ -143,14 +143,24 @@ export default class Amoeba extends Animal {
 	distanceToFood(){
 		// cast in front
 		const sightRange = this.genome.traitGenes.sightRange.value;
-		const lookDir = new Vec2(Math.cos(this.rotation), Math.sin(this.rotation)).normalized();
-		const foods = window.gameManager.app.stage.children.filter(o => o instanceof Food);
-		if(foods.length === 0) return 1;
-		const visibleFoods = Raycast(this.getPosition(), lookDir, foods, sightRange);
-		if(visibleFoods.length === 0) return 1;
-		const dist = Vec2.distance(this.getPosition(), visibleFoods[0].getPosition());
-		const distScaled = dist / sightRange;
-		return distScaled;
+		const sightAngle = this.genome.traitGenes.eyeAngle.value;
+		// results looks like [leftDist, centerDist, rightDist]
+		const results = []
+		for(let i = -sightAngle; i <= sightAngle; i += sightAngle){
+			const lookDir = new Vec2(Math.cos(this.rotation + i), Math.sin(this.rotation + i)).normalized();
+			const foods = window.gameManager.app.stage.children.filter(o => o instanceof Food);
+			if(foods.length === 0) return [1,1,1];
+			const visibleFoods = Raycast(this.getPosition(), lookDir, foods, sightRange);
+			if(visibleFoods.length === 0){
+				results.push(1);
+				continue;
+			}
+			const dist = Vec2.distance(this.getPosition(), visibleFoods[0].getPosition());
+			const distScaled = dist / sightRange;
+			results.push(distScaled);
+		}
+		if(results.length < 3) throw "invalid food distance list";
+		return results;
 	}
 
 	enemyInfo(){

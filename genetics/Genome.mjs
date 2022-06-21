@@ -61,7 +61,10 @@ export default class Genome {
 		let conn = randomElement(genome.connectionGenes);
 		// if no connections, return
 		if(!conn) return genome;
-		let newNode = new NodeGene(manager.nextInnovationNumber(), NodeType.HIDDEN, RandomActivation());
+		let activationFunction = RandomActivation();
+		const innov = manager.nextInnovationNumber();
+		//const name = "hidden_" + activationFunction.toString().toLowerCase() + "_" + innov;
+		let newNode = new NodeGene(innov, NodeType.HIDDEN, activationFunction);
 		// conn.enabled = false;
 		// TODO ^
 		const newConn1 = new ConnectionGene(

@@ -36,7 +36,6 @@ speedButtons.forEach(btn => {
 	const speedVal = parseInt(btn.id.split('-').pop())
 	btn.addEventListener('click', () => {
 		window.gameConfig.timeScale = speedVal;
-		console.log(speedVal);
 		speedButtons.forEach(b => b.className = b.className.replace("btn-primary", "btn-outline-secondary"))
 		btn.className = btn.className.replace('btn-outline-secondary', 'btn-primary');
 	});
@@ -75,9 +74,11 @@ const averageDisplay = document.querySelector("div#averages");
 const fpsHistoryLength = 15;
 const fpsHistory = [];
 
+manager.gameTime = 0;
+
 app.ticker.add((delta) => {
 	const deltaMS = app.ticker.elapsedMS * window.gameConfig.timeScale/1000;
-
+	manager.gameTime += deltaMS;
 	// temp, add this to class later
 	// find longest-living amoeba
 	const amoebas = window.gameManager.app.stage.children.filter(a => a instanceof Amoeba);

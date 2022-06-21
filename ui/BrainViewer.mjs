@@ -64,7 +64,7 @@ export default class BrainViewer {
 
         // compute distance between layers
         const numLayers = highestLayer + 1;
-        const screenPadding = 50;
+        const screenPadding = 60;
         const layerWidth = (window.gameManager.app.screen.width - (screenPadding * 2)) / numLayers;
 
         const radius = .6;
@@ -88,7 +88,8 @@ export default class BrainViewer {
                 // set up text
                 const textOffsetY = 15;
                 const fontSize = 12;
-                const text = new PIXI.Text(nodeIcon.node.name, {fontFamily : 'Arial', fontSize, fill : 0xff1010, align : 'center'});
+                const fontColor = 0xff2020;
+                const text = new PIXI.Text(nodeIcon.node.name, {fontFamily : 'Arial', fontSize, fill : fontColor, align : 'center'});
                 text.x = nodeIcon.x;
                 text.y = nodeIcon.y + textOffsetY;
                 text.anchor.set(0.5);
