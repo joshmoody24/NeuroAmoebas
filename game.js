@@ -1,6 +1,6 @@
 import Vec2 from './geometry/Vec2.mjs';
 // import {instance as gameManager} from './utility/GameManager.mjs';
-import Config from './config.json' assert {type: 'json'};
+import Config from './config.json' with {type: 'json'};
 import Amoeba from './ecosystem/Amoeba.mjs';
 import Food from './ecosystem/Food.mjs';
 import Manager from './ecosystem/Manager.mjs';
